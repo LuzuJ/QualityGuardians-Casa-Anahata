@@ -1,12 +1,27 @@
-import { Request, Response } from 'express';
-import { crearPaciente } from '../services/pacienteService';
+import { RequestHandler } from 'express';
+import { registrarPaciente } from '../services/pacienteService';
 
-export function crearPacienteHandler(req: Request, res: Response) {
+export const crearPacienteHandler: RequestHandler = (req, res) => {
   try {
-    const instructorId = (req as any).user.id;
-    const paciente = crearPaciente({ ...req.body, instructorId });
+    const { nombre, correo, fechaNacimiento, genero, observaciones } = req.body;
+
+    if (!nombre || !correo || !fechaNacimiento) {
+      res.status(400).json({ error: 'Faltan campos obligatorios' });
+      return;
+    }
+
+    const instructorId = (req as any).user?.id;
+
+    const paciente = registrarPaciente({
+      nombre,
+      correo,
+      fechaNacimiento,
+      genero,
+      observaciones,
+      instructorId
+    });
     res.status(201).json(paciente);
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
-}
+  };

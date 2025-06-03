@@ -4,6 +4,6 @@ import { verificarInstructor } from '../middlewares/middleware';
 
 const router = express.Router();
 
-router.post('/', verificarInstructor, crearPacienteHandler);
+router.post('/', verificarInstructor, crearPacienteHandler); 
 
 export default router;

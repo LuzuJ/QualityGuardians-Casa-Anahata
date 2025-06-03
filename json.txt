@@ -13,5 +13,13 @@ http://localhost:3000/api/auth/login
   "contraseña": "yoga2024"
 }
 
-
+http://localhost:3000/api/pacientes
+auth: bearer: colocar el token de autorización obtenido al iniciar sesión (sin comillas)
+{
+  "nombre": "Carlos Pérez",
+  "correo": "carlos@example.com",
+  "fechaNacimiento": "1990-04-25",
+  "genero": "masculino",
+  "observaciones": "Paciente con dolores lumbares"
+}
 

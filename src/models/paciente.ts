@@ -1,9 +1,9 @@
 export interface Paciente {
-  id: string; // UUID
+  id: string;
   nombre: string;
   correo: string;
-  fechaNacimiento: string; // ISO date
-  genero?: 'masculino' | 'femenino' | 'otro';
+  fechaNacimiento: string;
+  genero?: string;
   observaciones?: string;
-  instructorId: string; // Relación con el instructor creador
+  instructorId: string; // Relación con el instructor autenticado
 }

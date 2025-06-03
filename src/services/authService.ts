@@ -1,4 +1,3 @@
-import { Instructor } from '../models/instructor';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { instructores } from '../database/instructores';
