@@ -2,7 +2,7 @@
   "name": "yoga-clases-app",
   "version": "1.0.0",
   "scripts": {
-    "dev": "vite",
+    "dev": "ts-node src/index.ts",
     "build": "vite build"
   },
   "devDependencies": {
