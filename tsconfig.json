@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",                      // Buen rendimiento y compatibilidad moderna
+    "module": "ESNext",                      // Para usar import/export moderno
+    "moduleResolution": "Node",
+    "outDir": "./dist",                      // Carpeta de salida para archivos compilados
+    "rootDir": "./src",                      // Carpeta de entrada de código fuente
+    "strict": true,                          // Activa todas las comprobaciones estrictas
+    "esModuleInterop": true,                 // Permite importar módulos CommonJS
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true                     // Evita revisar tipos de node_modules
+  },
+  "include": ["src"],                        // Incluir todos los archivos de src/
+  "exclude": ["node_modules", "dist"]        // Excluir estas carpetas
+}

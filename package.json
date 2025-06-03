@@ -1,0 +1,12 @@
+{
+  "name": "yoga-clases-app",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "devDependencies": {
+    "typescript": "^5.x.x",
+    "vite": "^5.x.x"
+  }
+}
