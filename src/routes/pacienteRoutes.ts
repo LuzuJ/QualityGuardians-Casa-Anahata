@@ -1,9 +1,11 @@
 import express from 'express';
-import { crearPacienteHandler } from '../controllers/pacienteController';
+import { actualizarPacienteHandler, crearPacienteHandler, listarPacientesHandler } from '../controllers/pacienteController';
 import { verificarInstructor } from '../middlewares/middleware';
 
 const router = express.Router();
 
 router.post('/', verificarInstructor, crearPacienteHandler); 
+router.get('/', verificarInstructor, listarPacientesHandler);
+router.put('/:id', verificarInstructor, actualizarPacienteHandler);
 
 export default router;

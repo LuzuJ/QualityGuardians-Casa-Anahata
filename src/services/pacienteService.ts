@@ -16,3 +16,27 @@ export function registrarPaciente(data: Omit<Paciente, 'id'>): Paciente {
   pacientes.push(nuevo);
   return nuevo;
 }
+
+export function actualizarPaciente(id: string, data: Partial<Omit<Paciente, 'id' | 'instructorId'>>): Paciente {
+  const index = pacientes.findIndex(p => p.id === id);
+  if (index === -1) {
+    throw new Error('Paciente no encontrado');
+  }
+
+  // Validación simple: correo con "@"
+  if (data.correo && !data.correo.includes('@')) {
+    throw new Error('Correo inválido');
+  }
+
+  pacientes[index] = {
+    ...pacientes[index],
+    ...data
+  };
+
+  return pacientes[index];
+}
+
+export function obtenerPacientesPorInstructor(instructorId: string) {
+  return pacientes.filter(p => p.instructorId === instructorId);
+}
+
