@@ -1,0 +1,17 @@
+# Para probar las historias de usuario 
+
+http://localhost:3000/api/instructores
+{
+  "nombre": "Laura Gómez",
+  "correo": "laura@example.com",
+  "contraseña": "yoga2024"
+}
+
+http://localhost:3000/api/auth/login
+{
+  "correo": "laura@example.com",
+  "contraseña": "yoga2024"
+}
+
+
+

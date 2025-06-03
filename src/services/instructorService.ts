@@ -1,9 +1,8 @@
 import { Instructor } from '../models/instructor';
+import { instructores } from '../database/instructores';
 import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcrypt';
 
-// Simulación de base de datos en memoria
-const instructores: Instructor[] = [];
 
 export async function registrarInstructor(
   nombre: string,
