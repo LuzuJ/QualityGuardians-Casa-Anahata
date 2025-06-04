@@ -1,0 +1,263 @@
+@import url('https://fonts.googleapis.com/css2?family=Qwitcher+Grypen:wght@400;700&display=swap');
+
+/* Estilos generales */
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: 'Arial', sans-serif;
+  height: 100%;
+}
+
+.titulo-logo {
+  font-family: 'Qwitcher Grypen', cursive;
+  font-size: 3.5rem;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  margin-bottom: 1rem;
+}
+
+/* Estilos para páginas de login/registro */
+.fondo {
+  background: url('/src/assets/img/fondo.jpg') no-repeat center center fixed;
+  background-size: cover;
+  min-height: 100vh;
+  color: white;
+  display: flex;
+}
+
+.contenedor-izquierdo {
+  width: 50%;
+  min-width: 400px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.titulo {
+  font-size: 3.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  letter-spacing: 1px;
+  font-family: 'Qwitcher Grypen', cursive;
+}
+
+.contenedor-formulario {
+  background-color: rgba(0, 80, 60, 0.7);
+  padding: 2rem;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Estilos para el panel del instructor */
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f0f8ff;
+}
+
+.barra {
+  background-color: #1ABC83;
+  padding: 0.8rem 2rem;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.logo {
+  height: 40px;
+  margin-right: 15px;
+}
+
+.marca {
+  font-size: 1.8rem;
+  font-weight: 600;
+  font-family: 'Qwitcher Grypen', cursive;
+  color: white;
+  margin-right: auto;
+}
+
+.nav-usuario {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.btn-cerrar-sesion {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.panel {
+  display: flex;
+  flex-grow: 1;
+}
+
+.menu-lateral {
+  width: 220px;
+  background-color: #f8f9fa;
+  padding: 1.5rem 0;
+  border-right: 1px solid #ddd;
+}
+
+.btn-menu {
+  width: 100%;
+  padding: 0.8rem 1.5rem;
+  border: none;
+  background: transparent;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-menu:hover {
+  background-color: #e0f2f1;
+}
+
+.btn-menu.activo {
+  background-color: #d0e8e2;
+  font-weight: 500;
+}
+
+.contenido-panel {
+  flex: 1;
+  padding: 2rem;
+  background-color: #f1f5f9;
+}
+
+.tarjeta {
+  background: white;
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  max-width: 800px;
+}
+
+/* Estilos de formularios comunes */
+.formulario {
+  display: flex;
+  flex-direction: column;
+}
+
+.formulario h2 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  color: white;
+}
+
+.formulario input[type="text"],
+.formulario input[type="email"],
+.formulario input[type="password"],
+.formulario input[type="tel"],
+.formulario input[type="date"] {
+  margin: 0.5rem 0;
+  padding: 0.8rem;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  background-color: white;
+}
+
+.formulario input:focus {
+  outline: 2px solid #1ABC83;
+  border-color: transparent;
+}
+
+.fila-doble {
+  display: flex;
+  gap: 1rem;
+}
+
+.fila-doble > * {
+  flex: 1;
+}
+
+.grupo-radio {
+  display: flex;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.radio-opcion {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.radio-opcion input[type="radio"] {
+  accent-color: #1ABC83;
+}
+
+/* Botones */
+.btn-primario {
+  background-color: #1ABC83;
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-top: 1rem;
+}
+
+.btn-primario:hover {
+  background-color: #1ABC83;
+}
+
+/* Enlaces */
+.enlace-registro,
+.enlace-login {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+}
+
+.formulario a {
+  color: #00a896;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.formulario a:hover {
+  color: #00887b;
+  text-decoration: underline;
+}
+
+.opciones-rol {
+  font-size: 0.9rem;
+  margin: 1rem 0;
+}
+
+.btn-grande-centro {
+  display: block;
+  width: 100%;
+  max-width: 320px;
+  margin: 2rem auto 0 auto;
+  padding: 1.2rem;
+  font-size: 1.2rem;
+  background-color: #1ABC83;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  text-align: center;
+  transition: background-color 0.3s;
+}
+
+.btn-grande-centro:hover {
+  background-color: #17a673;
+}
+
