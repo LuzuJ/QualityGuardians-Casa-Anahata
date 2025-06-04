@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ejecutando Serie</title>
+  <link rel="stylesheet" href="estilos.css" />
+</head>
+<body>
+  <div class="barra">
+    <img src="img/logo.png" alt="Logo" class="logo" />
+    <div class="marca">Casa Anahata</div>
+    <button class="btn-cerrar-sesion" onclick="location.href='inicioSesion.html'">Cerrar sesión</button>
+  </div>
+
+  <div class="panel">
+    <div class="menu-lateral">
+      <button class="btn-menu activo">Ejecutar sesión</button>
+      <button class="btn-menu" onclick="location.href='registroSesion.html'">Registrar evaluación</button>
+      <button class="btn-menu" onclick="location.href='detalleSesion.html'">Ver historial</button>
+    </div>
+
+    <div class="contenido-panel">
+      <div class="tarjeta">
+        <h2>Postura 1: Tadasana</h2>
+        <!-- Aquí se cargará la imagen de la postura desde la base de datos -->
+        <div class="imagen-postura">
+          <!-- Ejemplo estático -->
+          <img src="img/tadasana.png" alt="Tadasana" style="max-width: 100%; margin-bottom: 1rem;">
+        </div>
+
+        <!-- Aquí se puede implementar un contador si luego se desea -->
+        <p>Duración sugerida: 30 segundos</p>
+
+        <div style="margin-top: 2rem;">
+          <a href="visualizarPosturas.html" class="btn-primario">Ver detalles</a>
+          <a href="ejecucionSerie.html" class="btn-primario">Siguiente postura</a>
+        </div>
+
+        <!-- Comentario para desarrolladores:
+             Aquí se debe cargar dinámicamente cada postura según el paciente y su serie,
+             usando lenguaje del lado del servidor como PHP o Python con la base de datos.
+        -->
+      </div>
+    </div>
+  </div>
+</body>
+</html>

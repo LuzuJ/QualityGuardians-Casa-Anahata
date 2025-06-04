@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ejecutar Sesión</title>
+  <link rel="stylesheet" href="estilos.css" />
+</head>
+<body>
+  <header class="barra">
+    <img src="img/logo.png" alt="Logo Casa Anahata" class="logo">
+    <h1 class="marca">Casa Anahata</h1>
+  </header>
+
+  <main class="contenido-panel">
+    <div class="tarjeta" style="text-align: center;">
+      <h2 class="titulo-seccion">Iniciar sesión terapéutica</h2>
+      <p style="margin-bottom: 2rem; font-style: italic; color: #555;">
+        “Empieza a sanar”
+      </p>
+
+      <form class="formulario" action="ejecucionSerie.html" method="GET" style="align-items: center;">
+        <label for="dolorInicio" style="margin-bottom: 1rem;">Nivel de molestia al inicio</label>
+        <select name="dolorInicio" id="dolorInicio" required style="margin-bottom: 2rem; max-width: 300px;">
+          <option value="">Seleccione</option>
+          <option value="0">Sin dolor/molestia</option>
+          <option value="1">Leve</option>
+          <option value="2">Moderado</option>
+          <option value="3">Intenso</option>
+          <option value="4">Máximo dolor/molestia</option>
+        </select>
+        <button class="btn-grande-centro" type="submit">Comenzar Serie</button>
+      </form>
+    </div>
+  </main>
+</body>
+</html>

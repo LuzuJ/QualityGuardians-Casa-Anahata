@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Asignar Serie a Paciente</title>
+  <link rel="stylesheet" href="estilos.css" />
+</head>
+<body class="dashboard">
+  <div class="barra">
+    <img src="img/logo.png" alt="Logo Casa Anahata" class="logo" />
+    <div class="marca">Casa Anahata</div>
+    <button class="btn-cerrar-sesion" onclick="location.href='inicioSesion.html'">Cerrar sesión</button>
+  </div>
+
+  <div class="panel">
+    <div class="menu-lateral">
+        <button class="btn-menu" onclick="location.href='dashboard.html'">Dashboard</button>
+        <button class="btn-menu" onclick="location.href='gestionPacientes.html'">Gestionar pacientes</button>
+        <button class="btn-menu" onclick="location.href='crearSerie.html'">Crear serie terapéutica</button>
+        <button class="btn-menu" onclick="location.href='asignarSerie.html'">Asignar serie</button>
+      </div>
+
+    <main class="contenido-panel">
+      <div class="tarjeta">
+        <h2 class="titulo-seccion">Asignar Serie a Paciente</h2>
+        <form class="formulario">
+          <label class="texto-label" for="pacienteId">Seleccionar paciente</label>
+          <select id="pacienteId" name="pacienteId" required>
+            <option value="">Seleccione un paciente</option>
+          </select>
+
+          <label class="texto-label" for="serieId">Seleccionar serie terapéutica</label>
+          <select id="serieId" name="serieId" required>
+            <option value="">Seleccione una serie</option>
+          </select>
+
+          <button class="btn-primario" type="submit">Asignar Serie</button>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.body.classList.add("mostrar");
+    });
+  </script>
+</body>
+</html>

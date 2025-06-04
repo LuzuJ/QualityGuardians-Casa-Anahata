@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Registrar Evaluación</title>
+  <link rel="stylesheet" href="estilos.css" />
+</head>
+<body>
+  <div class="barra">
+    <img src="img/logo.png" alt="Logo Casa Anahata" class="logo" />
+    <h1 class="marca">Casa Anahata</h1>
+    <button class="btn-cerrar-sesion" onclick="location.href='inicioSesion.html'">Cerrar sesión</button>
+  </div>
+
+  <div class="panel">
+    <div class="menu-lateral">
+      <button class="btn-menu" onclick="location.href='ejecucionSerie.html'">Ejecutar sesión</button>
+      <button class="btn-menu activo">Registrar evaluación</button>
+      <button class="btn-menu" onclick="location.href='detalleSesion.html'">Ver historial</button>
+    </div>
+
+    <div class="contenido-panel">
+      <div class="tarjeta" style="padding: 2rem;">
+        <h2>Evaluación después de la sesión</h2>
+
+        <form class="formulario">
+          <label for="dolorFinal" class="texto-label" style="margin-bottom: 1rem;">Nivel de molestia al final</label>
+          <select name="dolorFinal" id="dolorFinal" required style="margin-bottom: 2rem; max-width: 300px;">
+            <option value="">Seleccione</option>
+            <option value="0">Sin dolor/molestia</option>
+            <option value="1">Leve</option>
+            <option value="2">Moderado</option>
+            <option value="3">Intenso</option>
+            <option value="4">Máximo dolor/molestia</option>
+          </select>
+
+          <label for="comentario" class="texto-label" style="margin-bottom: 1rem;">Comentario sobre la sesión</label>
+          <textarea id="comentario" name="comentario" rows="5" required style="margin-bottom: 2rem; max-width: 100%;"></textarea>
+
+          <button class="btn-primario" type="submit">Guardar evaluación</button>
+        </form>
+
+        <!-- Comentario: Aquí debe insertarse en la base de datos la evaluación final del paciente:
+             INSERT INTO evaluaciones (idPaciente, idSesion, dolorFinal, comentario) VALUES (...)
+        -->
+      </div>
+    </div>
+  </div>
+</body>
+</html>

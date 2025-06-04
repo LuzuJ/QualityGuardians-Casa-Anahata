@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Detalles de Postura</title>
+  <link rel="stylesheet" href="estilos.css" />
+</head>
+<body>
+  <div class="barra">
+    <img src="img/logo.png" alt="Logo Casa Anahata" class="logo">
+    <h1 class="marca">Casa Anahata</h1>
+  </div>
+
+  <main class="contenido-panel">
+    <div class="tarjeta">
+      <h2>Instrucciones de la postura</h2>
+
+      <!-- Aquí se mostrarán los detalles extraídos de la base de datos -->
+      <p><strong>Nombre:</strong> Tadasana (Postura de la montaña)</p>
+      <p><strong>Beneficios:</strong> Mejora la postura, activa los músculos de piernas y abdomen.</p>
+      <p><strong>Instrucciones:</strong> Coloca los pies juntos, distribuye el peso equitativamente y levanta los brazos por encima de la cabeza con las palmas enfrentadas.</p>
+
+      <div style="margin: 2rem 0;">
+        <video controls style="width: 100%; max-width: 600px;">
+          <!-- El src debe jalarse de la base de datos -->
+          <source src="videos/tadasana.mp4" type="video/mp4" />
+          Tu navegador no soporta la reproducción de video.
+        </video>
+      </div>
+
+      <a href="ejecucionSerie.html" class="btn-primario">Regresar</a>
+
+      <!-- Comentario: Esta página debe recibir un ID de postura desde la ejecución
+           para cargar dinámicamente los datos e instrucciones desde la base de datos -->
+    </div>
+  </main>
+</body>
+</html>

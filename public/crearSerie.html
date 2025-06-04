@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Crear Serie Terapéutica</title>
+  <link rel="stylesheet" href="estilos.css" />
+</head>
+<body class="dashboard">
+  <div class="barra">
+    <img src="img/logo.png" alt="Logo" class="logo" />
+    <div class="marca">Casa Anahata</div>
+    <button class="btn-cerrar-sesion" onclick="location.href='inicioSesion.html'">Cerrar sesión</button>
+  </div>
+
+  <div class="panel">
+    <div class="menu-lateral">
+        <button class="btn-menu" onclick="location.href='dashboard.html'">Dashboard</button>
+        <button class="btn-menu" onclick="location.href='gestionPacientes.html'">Gestionar pacientes</button>
+        <button class="btn-menu" onclick="location.href='crearSerie.html'">Crear serie terapéutica</button>
+        <button class="btn-menu" onclick="location.href='asignarSerie.html'">Asignar serie</button>
+      </div>
+
+    <div class="contenido-panel">
+      <div class="tarjeta">
+        <h2>Crear nueva serie terapéutica</h2>
+        <form class="formulario" method="post" action="/guardarSerie">
+          <div class="campo-formulario">
+            <label for="nombreSerie">Nombre de la serie</label>
+            <input type="text" id="nombreSerie" name="nombreSerie" placeholder="Ej. Serie relajante para insomnio" required />
+          </div>
+
+          <div class="campo-formulario">
+            <label for="tipoTerapia">Tipo de terapia</label>
+            <select id="tipoTerapia" name="tipoTerapia" required>
+              <option value="">Selecciona una opción</option>
+              <option value="ansiedad">Ansiedad</option>
+              <option value="artritis">Artritis</option>
+              <option value="dolorEspalda">Dolor de espalda</option>
+            </select>
+          </div>
+
+          <fieldset style="margin-top: 2rem;">
+            <legend>Posturas de la serie</legend>
+            <div id="listaPosturas">
+              <div class="postura-item">
+                <label>Postura:</label>
+                <select name="posturas[]" required>
+                  <option value="">Selecciona una postura</option>
+                </select>
+                <label>Duración (minutos):</label>
+                <input type="number" name="duracion[]" min="1" max="60" required />
+              </div>
+            </div>
+            <button type="button" class="btn-primario" disabled>+ Añadir otra postura</button>
+          </fieldset>
+
+          <div class="campo-formulario">
+            <label for="numSesiones">Número de sesiones recomendadas</label>
+            <input type="number" id="numSesiones" name="numSesiones" min="1" max="100" required />
+          </div>
+
+          <button type="submit" class="btn-primario">Guardar serie</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.body.classList.add("mostrar");
+    });
+  </script>
+</body>
+</html>

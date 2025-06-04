@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Historial de Sesiones</title>
+  <link rel="stylesheet" href="estilos.css" />
+</head>
+<body>
+  <div class="barra">
+    <img src="img/logo.png" alt="Logo Casa Anahata" class="logo" />
+    <h1 class="marca">Casa Anahata</h1>
+    <button class="btn-cerrar-sesion" onclick="location.href='inicioSesion.html'">Cerrar sesión</button>
+  </div>
+
+  <div class="panel">
+    <div class="menu-lateral">
+      <button class="btn-menu" onclick="location.href='ejecucionSerie.html'">Ejecutar sesión</button>
+      <button class="btn-menu" onclick="location.href='registroSesion.html'">Registrar evaluación</button>
+      <button class="btn-menu activo">Ver historial</button>
+    </div>
+
+    <div class="contenido-panel">
+      <div class="tarjeta" style="padding: 2rem;">
+        <h2>Historial de sesiones</h2>
+
+        <!-- Comentario: Aquí debe hacerse la consulta a la base de datos para traer el historial de sesiones del paciente -->
+        <!-- Ejemplo de sesión -->
+        <div class="tarjeta" style="margin-top: 2rem; padding: 1.5rem;">
+          <p><strong>Fecha:</strong> 2025-06-03</p>
+          <p><strong>Duración efectiva:</strong> 22 minutos</p>
+          <p><strong>Pausas realizadas:</strong> 1</p>
+          <p><strong>Intensidad inicial:</strong> Moderado</p>
+          <p><strong>Intensidad final:</strong> Leve</p>
+          <p><strong>Comentario:</strong> Me sentí relajado y más flexible.</p>
+        </div>
+
+        <!-- Comentario: Repetir bloque anterior para cada sesión obtenida desde la base de datos -->
+      </div>
+    </div>
+  </div>
+</body>
+</html>
