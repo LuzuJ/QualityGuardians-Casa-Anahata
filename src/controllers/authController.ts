@@ -1,18 +1,27 @@
 import { RequestHandler } from 'express';
-import { loginInstructor } from '../services/authService';
+import { loginInstructor, loginPaciente } from '../services/authService';
 
-export const loginInstructorHandler: RequestHandler = async (req, res) => {
+export const loginHandler: RequestHandler = async (req, res) => {
   try {
-    const { correo, contraseña } = req.body;
+    const { correo, contraseña, rol } = req.body;
 
-    if (!correo || !contraseña) {
-      res.status(400).json({ error: 'Correo y contraseña son obligatorios' });
+    if (!correo || !contraseña || !rol) {
+      res.status(400).json({ error: 'Correo, contraseña y rol son obligatorios' });
       return;
     }
 
-    const token = await loginInstructor(correo, contraseña);
+    let loginData;
 
-    res.json({ token });
+    if (rol === 'instructor') {
+      loginData = await loginInstructor(correo, contraseña);
+    } else if (rol === 'paciente') {
+      loginData = await loginPaciente(correo, contraseña);
+    } else {
+      res.status(400).json({ error: 'Rol no válido' });
+      return;
+    }
+
+    res.json(loginData);
   } catch (error: any) {
     res.status(401).json({ error: error.message });
   }

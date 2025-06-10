@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import { JwtPayload } from '../types/express';
 
 export function verificarInstructor(req: Request, res: Response, next: NextFunction): void {
   const authHeader = req.headers.authorization;
@@ -18,8 +19,7 @@ export function verificarInstructor(req: Request, res: Response, next: NextFunct
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET ?? 'secret');
 
-    // Tipar manualmente para evitar conflictos con req.user
-    (req as any).user = decoded;
+    req.user = decoded as JwtPayload;
 
     next();
   } catch (error) {
