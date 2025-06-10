@@ -1,3 +1,13 @@
+# Probar el proyecto
+Para probar el proyecto se deben ejecutar ambas lineas en diferentes consolas del mismo proyecto junto con las dependencias 
+> npm install
+
+Back correrá en el puerto 3000
+> npm run dev:backend
+
+Front en el puerto 5173
+> npm run dev:frontend
+
 # Para probar las historias de usuario 
 ## Historia 01
 POST
