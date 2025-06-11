@@ -4,21 +4,17 @@ import { loginInstructor, loginPaciente } from '../services/authService';
 export const loginHandler: RequestHandler = async (req, res) => {
   try {
     const { correo, contraseña, rol } = req.body;
-
     if (!correo || !contraseña || !rol) {
-      res.status(400).json({ error: 'Correo, contraseña y rol son obligatorios' });
-      return;
+      return res.status(400).json({ error: 'Correo, contraseña y rol son obligatorios' });
     }
 
     let loginData;
-
     if (rol === 'instructor') {
       loginData = await loginInstructor(correo, contraseña);
     } else if (rol === 'paciente') {
       loginData = await loginPaciente(correo, contraseña);
     } else {
-      res.status(400).json({ error: 'Rol no válido' });
-      return;
+      return res.status(400).json({ error: 'Rol no válido' });
     }
 
     res.json(loginData);

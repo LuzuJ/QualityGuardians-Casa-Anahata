@@ -1,45 +1,33 @@
 {
   "name": "yoga-clases-app",
   "version": "1.0.0",
-  "description": "",
-  "main": "dist/index.js",
+  "description": "Software para gestión de clases de yoga terapéutico.",
+  "main": "dist/src/index.js",
   "scripts": {
     "dev": "concurrently \"npm:dev:backend\" \"npm:dev:frontend\"",
-    "dev:backend": "ts-node src/index.ts",
+    "dev:backend": "ts-node-dev --respawn --transpile-only src/index.ts",
     "dev:frontend": "vite",
     "build:backend": "tsc",
     "build:frontend": "vite build",
-    "start": "node dist/backend/index.js"
+    "start": "node dist/src/index.js"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.50.0",
-    "bcrypt": "^6.0.0",
+    "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
-    "dotenv": "^16.5.0",
-    "express": "^5.1.0",
+    "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
-    "uuid": "^11.1.0"
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
-    "@types/cors": "^2.8.18",
-    "@types/express": "^5.0.2",
-    "@types/jsonwebtoken": "^9.0.9",
-    "@types/node": "^22.15.29",
-    "nodemon": "^3.1.10",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.8.3",
-    "vite": "^6.3.5"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/JoelXimenez/QualityGuardians-Casa-Anahata.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/JoelXimenez/QualityGuardians-Casa-Anahata/issues"
-  },
-  "homepage": "https://github.com/JoelXimenez/QualityGuardians-Casa-Anahata#readme"
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.6",
+    "@types/node": "^20.14.2",
+    "@types/uuid": "^9.0.8",
+    "concurrently": "^8.2.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.4.5",
+    "vite": "^5.3.1"
+  }
 }

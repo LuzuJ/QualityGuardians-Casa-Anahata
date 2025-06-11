@@ -4,8 +4,6 @@ import { verificarToken } from '../middlewares/middleware';
 
 const router = express.Router();
 
-router.post('/registrar', verificarToken, (req, res, next) => {
-	registrarSesionHandler(req, res).catch(next);
-});
+router.post('/registrar', verificarToken, registrarSesionHandler);
 
 export default router;
