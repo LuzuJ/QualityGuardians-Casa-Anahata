@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const iniciarEdicion = (paciente: Paciente) => {
     modoEdicion = true;
-    pacienteIdEditando = paciente.id;
+    pacienteIdEditando = paciente.cedula;
     nombreInput.value = paciente.nombre;
     correoInput.value = paciente.correo;
     telefonoInput.value = paciente.telefono || ''; 
@@ -62,10 +62,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     addPatientForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const data = {
-            nombre: nombreInput.value,
-            correo: correoInput.value,
-            telefono: telefonoInput.value,
-            fechaNacimiento: fechaInput.value
+            cedula: (addPatientForm.querySelector('input[name="cedula"]') as HTMLInputElement).value,
+            nombre: (addPatientForm.querySelector('input[name="nombre"]') as HTMLInputElement).value,
+            correo: (addPatientForm.querySelector('input[name="correo"]') as HTMLInputElement).value,
+            telefono: (addPatientForm.querySelector('input[name="telefono"]') as HTMLInputElement).value,
+            fechaNacimiento: (addPatientForm.querySelector('input[name="fechaNacimiento"]') as HTMLInputElement).value
         };
         try {
             if (modoEdicion && pacienteIdEditando) {

@@ -11,9 +11,9 @@ const router = express.Router();
 // --- Rutas de Instructor sobre Pacientes (requieren token) ---
 router.post('/', verificarToken, crearPacienteHandler); 
 router.get('/', verificarToken, listarPacientesHandler);
-router.put('/:id', verificarToken, actualizarPacienteHandler);
-router.post('/:id/asignar-serie', verificarToken, asignarSerieHandler);
-router.get('/:id/historial', verificarToken, obtenerHistorialHandler);
+router.put('/:cedula', verificarToken, actualizarPacienteHandler);
+router.post('/:cedula/asignar-serie', verificarToken, asignarSerieHandler);
+router.get('/:cedula/historial', verificarToken, obtenerHistorialHandler);
 
 // --- Ruta Pública de Paciente (no requiere token) ---
 router.post('/establecer-password', establecerPasswordPacienteHandler);

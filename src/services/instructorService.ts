@@ -1,6 +1,5 @@
+import { supabase } from '../config/supabaseClient';
 import { Instructor } from '../models/instructor';
-import { instructores } from '../database/instructores';
-import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcrypt';
 
 
@@ -9,22 +8,33 @@ export async function registrarInstructor(
   correo: string,
   contraseña: string
 ): Promise<Omit<Instructor, 'contraseña'>> {
-  const existente = instructores.find(i => i.correo === correo);
+  const { data: existente } = await supabase
+    .from('Instructor') // Usa el nombre EXACTO de tu tabla en Supabase
+    .select('id')
+    .eq('correo', correo) // eq() es como un 'WHERE correo = ...'
+    .single(); // .single() espera un solo resultado o ninguno
+
   if (existente) {
     throw new Error('El correo ya está registrado');
   }
 
   const hash = await bcrypt.hash(contraseña, 10);
-  const nuevo: Instructor = {
-    id: uuidv4(),
+  const nuevoInstructor: Omit<Instructor, 'id'> = { 
     nombre,
     correo,
     contraseña: hash,
   };
 
-  instructores.push(nuevo);
+  const { data, error } = await supabase
+    .from('Instructor')
+    .insert(nuevoInstructor)
+    .select('id, nombre, correo') // Selecciona solo los campos seguros para devolver
+    .single();
 
-  // Retornar sin la contraseña
-  const { contraseña: _, ...sinContraseña } = nuevo;
-  return sinContraseña;
+  if (error) {
+    console.error("Error en Supabase al registrar instructor:", error);
+    throw new Error('Error al registrar al instructor.');
+  }
+
+  return data;
 }

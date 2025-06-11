@@ -1,35 +1,44 @@
-import { pacientes } from '../database/pacientes';
-import { series } from '../database/series';
+import { supabase } from '../config/supabaseClient';
 
 export async function obtenerEstadisticasInstructor(instructorId: string) {
-    // 1. Calcular pacientes registrados por el instructor
-    const pacientesRegistrados = pacientes.filter(p => p.instructorId === instructorId).length;
+  const { count: pacientesRegistrados, error: errorPacientes } = await supabase
+    .from('Paciente')
+    .select('cedula', { count: 'exact', head: true }) 
+    .eq('instructorId', instructorId);
 
-    // 2. Calcular series creadas por el instructor
-    const seriesCreadas = series.filter(s => s.instructorId === instructorId).length;
+  if (errorPacientes) throw new Error("Error al contar pacientes.");
 
-    // 3. Calcular sesiones completadas en la última semana por sus pacientes
-    const sieteDiasAtras = new Date();
-    sieteDiasAtras.setDate(sieteDiasAtras.getDate() - 7); // Calcula la fecha de hace 7 días
+  const { count: seriesCreadas, error: errorSeries } = await supabase
+    .from('Series')
+    .select('id', { count: 'exact', head: true })
+    .eq('instructorId', instructorId);
 
-    let sesionesCompletadasSemana = 0;
-    const misPacientes = pacientes.filter(p => p.instructorId === instructorId);
+  if (errorSeries) throw new Error("Error al contar series.");
 
-    for (const paciente of misPacientes) {
-        if (paciente.historialSesiones) {
-            for (const sesion of paciente.historialSesiones) {
-                const fechaSesion = new Date(sesion.fecha);
-                if (fechaSesion >= sieteDiasAtras) {
-                    sesionesCompletadasSemana++;
-                }
-            }
+  const { data: pacientes, error: errorHistorial } = await supabase
+    .from('Paciente')
+    .select('historialSesiones')
+    .eq('instructorId', instructorId);
+
+  if (errorHistorial) throw new Error("Error al obtener historial de pacientes.");
+
+  const sieteDiasAtras = new Date();
+  sieteDiasAtras.setDate(sieteDiasAtras.getDate() - 7);
+  let sesionesCompletadasSemana = 0;
+
+  for (const paciente of pacientes) {
+    if (paciente.historialSesiones) {
+      for (const sesion of paciente.historialSesiones) {
+        if (new Date(sesion.fecha) >= sieteDiasAtras) {
+          sesionesCompletadasSemana++;
         }
+      }
     }
+  }
 
-    // 4. Devolver el objeto con todas las estadísticas
-    return {
-        pacientesRegistrados,
-        seriesCreadas,
-        sesionesCompletadasSemana
-    };
+  return {
+    pacientesRegistrados: pacientesRegistrados ?? 0,
+    seriesCreadas: seriesCreadas ?? 0,
+    sesionesCompletadasSemana
+  };
 }

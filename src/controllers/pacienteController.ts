@@ -19,7 +19,7 @@ export const crearPacienteHandler: RequestHandler = async (req, res) => {
  
 export const actualizarPacienteHandler: RequestHandler = async (req, res) => {
   try {
-    const pacienteActualizado = await actualizarPaciente(req.params.id, req.body);
+    const pacienteActualizado = await actualizarPaciente(req.params.cedula, req.body);
     res.json({ mensaje: 'Paciente actualizado correctamente', paciente: pacienteActualizado });
   } catch (error: any) {
     if (error.message.includes('encontrado')) return res.status(404).json({ error: error.message });
@@ -70,7 +70,7 @@ export const obtenerMiSerieHandler: RequestHandler = async (req, res) => {
 };
 
 export const obtenerHistorialHandler: RequestHandler = async (req, res) => {
-    const pacienteId = req.params.id;
+    const pacienteId = req.params.cedula;
     try {
         const historial = await obtenerHistorialDePaciente(pacienteId);
         res.status(200).json(historial);

@@ -1,7 +1,6 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { instructores } from '../database/instructores';
-import { pacientes } from '../database/pacientes';
+import { supabase } from '../config/supabaseClient';
 
 // Definimos el tipo de objeto que vamos a devolver
 interface LoginResponse {
@@ -10,31 +9,41 @@ interface LoginResponse {
 }
 
 export async function loginInstructor(correo: string, contraseña: string): Promise<LoginResponse> {
-  const instructor = instructores.find(i => i.correo === correo);
+  const { data, error } = await supabase
+    .from('Instructor')
+    .select('id, contraseña')
+    .eq('correo', correo)
+    .single();
 
-  if (!instructor) {
-    throw new Error('No existe una cuenta con este correo');
-  }
+  const instructor = data as { id: string; contraseña: string } | null;
 
-  const match = await bcrypt.compare(contraseña, instructor.contraseña);
-  if (!match) {
-    throw new Error('Contraseña incorrecta');
-  }
+  if (error || !instructor) {
+    throw new Error('Credenciales incorrectas.');
+  }
 
-  const token = jwt.sign(
-    { id: instructor.id, correo: instructor.correo, rol: 'instructor' },
-    process.env.JWT_SECRET ?? 'secret',
-    { expiresIn: '2h' }
-  );
+  const match = await bcrypt.compare(contraseña, instructor.contraseña);
+  if (!match) {
+    throw new Error('Credenciales incorrectas.');
+  }
 
-  // Devolvemos el objeto completo
-  return { token, rol: 'instructor' };
+  const token = jwt.sign(
+    { id: instructor.id, correo: correo, rol: 'instructor' },
+    process.env.JWT_SECRET ?? 'secret',
+    { expiresIn: '8h' }
+  );
+
+  return { token, rol: 'instructor' };
 }
 
 export async function loginPaciente(correo: string, contraseña: string): Promise<LoginResponse> {
-  const paciente = pacientes.find(p => p.correo === correo);
+  const { data, error } = await supabase
+    .from('Paciente')
+    .select('id, contraseña, estado')
+    .eq('correo', correo)
+    .single();
+  const paciente = data as { id: string; contraseña: string; estado: string } | null;
 
-  if (!paciente || paciente.estado !== 'activo' || !paciente.contraseña) {
+  if (error || !paciente || paciente.estado !== 'activo' || !paciente.contraseña) {
     throw new Error('Credenciales incorrectas o cuenta no activada.');
   }
 
@@ -43,6 +52,11 @@ export async function loginPaciente(correo: string, contraseña: string): Promis
     throw new Error('Credenciales incorrectas.');
   }
   
-  const token = jwt.sign({ id: paciente.id, correo: paciente.correo, rol: 'paciente' }, process.env.JWT_SECRET ?? 'secret', { expiresIn: '2h' });
+  const token = jwt.sign(
+    { id: paciente.id, correo: correo, rol: 'paciente' },
+    process.env.JWT_SECRET ?? 'secret',
+    { expiresIn: '8h' }
+  );
+
   return { token, rol: 'paciente' };
 }

@@ -1,70 +1,71 @@
-import { pacientes } from '../database/pacientes';
+import { supabase } from '../config/supabaseClient';
 import { Paciente } from '../models/paciente';
-import { series } from '../database/series';
-import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcrypt';
+import { v4 as uuidv4 } from 'uuid';
 import { HistorialSesion } from '../models/historialSesion';
 
-export async function registrarPaciente(data: Omit<Paciente, 'id' | 'contraseña' | 'estado' | 'historialSesiones' | 'serieAsignada'>): Promise<Paciente> {
-  if (pacientes.find(p => p.correo === data.correo)) {
-    throw new Error('El correo ya está registrado');
-  }
-  const nuevo: Paciente = {
-    id: uuidv4(),
-    ...data,
-    estado: 'pendiente',
-    historialSesiones: [],
-  };
-  pacientes.push(nuevo);
-  return nuevo;
+export async function registrarPaciente(datos: Omit<Paciente, 'id' | 'contraseña' | 'estado' | 'historialSesiones' | 'serieAsignada'>) {
+  const { data: existente } = await supabase.from('Paciente').select('cedula').eq('correo', datos.correo).single();
+  if (existente) throw new Error('El correo ya está registrado');
+
+  const nuevoPaciente = { ...datos, estado: 'pendiente', historialSesiones: [] };
+
+  const { data, error } = await supabase.from('Paciente').insert(nuevoPaciente).select().single();
+  if (error) throw new Error('Error al registrar al paciente.');
+  return data;
 }
 
-export async function actualizarPaciente(id: string, data: Partial<Omit<Paciente, 'id' | 'instructorId'>>): Promise<Paciente> {
-  const index = pacientes.findIndex(p => p.id === id);
-  if (index === -1) throw new Error('Paciente no encontrado');
-  pacientes[index] = { ...pacientes[index], ...data };
-  return pacientes[index];
+export async function actualizarPaciente(cedula: string, datos: Partial<Omit<Paciente, 'id' | 'instructorId'>>) {
+  const { data, error } = await supabase.from('Paciente').update(datos).eq('cedula', cedula).select().single();
+  if (error) throw new Error('Error al actualizar o paciente no encontrado.');
+  return data;
 }
 
 export async function obtenerPacientesPorInstructor(instructorId: string): Promise<Paciente[]> {
-  return pacientes.filter(p => p.instructorId === instructorId);
+  const { data, error } = await supabase.from('Paciente').select('*').eq('instructorId', instructorId);
+  if (error) throw new Error('Error al obtener pacientes.');
+  return data || [];
 }
 
-export async function establecerPasswordPaciente(correo: string, nuevaContraseña: string): Promise<{ message: string }> {
-  const pacienteIndex = pacientes.findIndex(p => p.correo === correo);
-  if (pacienteIndex === -1) throw new Error("No se encontró un paciente con ese correo electrónico.");
-  const paciente = pacientes[pacienteIndex];
+export async function establecerPasswordPaciente(correo: string, nuevaContraseña: string) {
+  const { data: paciente, error: findError } = await supabase.from('Paciente').select('*').eq('correo', correo).single();
+  if (findError || !paciente) throw new Error("No se encontró un paciente con ese correo electrónico.");
   if (paciente.estado !== 'pendiente') throw new Error("Esta cuenta ya ha sido activada.");
+  
   const hashContraseña = await bcrypt.hash(nuevaContraseña, 10);
-  pacientes[pacienteIndex] = { ...paciente, contraseña: hashContraseña, estado: 'activo' };
+  
+  const { error: updateError } = await supabase.from('Paciente').update({ contraseña: hashContraseña, estado: 'activo' }).eq('correo', correo);
+  if (updateError) throw new Error('Error al activar la cuenta.');
+  
   return { message: "Cuenta activada y contraseña establecida con éxito." };
 }
 
-export async function asignarSerieAPaciente(pacienteId: string, serieId: string): Promise<Paciente> {
-  const pacienteIndex = pacientes.findIndex(p => p.id === pacienteId);
-  if (pacienteIndex === -1) throw new Error('Paciente no encontrado');
-  const serieAAsignar = series.find(s => s.id === serieId);
+export async function asignarSerieAPaciente(pacienteCedula: string, serieId: string) {
+  const { data: serieAAsignar } = await supabase.from('Series').select('*').eq('id', serieId).single();
   if (!serieAAsignar) throw new Error('Serie no encontrada');
-  pacientes[pacienteIndex].serieAsignada = {
+
+  const datosAsignacion = {
     idSerie: serieAAsignar.id,
     nombreSerie: serieAAsignar.nombre,
     fechaAsignacion: new Date().toISOString(),
     sesionesRecomendadas: serieAAsignar.sesionesRecomendadas,
     sesionesCompletadas: 0,
   };
-  return pacientes[pacienteIndex];
+  
+  const { data, error } = await supabase.from('Paciente').update({ serieAsignada: datosAsignacion }).eq('cedula', pacienteCedula).select().single();
+  if (error) throw new Error('Error al asignar la serie o paciente no encontrado.');
+  return data;
 }
 
-export async function obtenerSerieAsignada(pacienteId: string): Promise<any> {
-  const paciente = pacientes.find(p => p.id === pacienteId);
-  if (!paciente || !paciente.serieAsignada) throw new Error('No tienes una serie terapéutica asignada.');
-  return paciente.serieAsignada;
+export async function obtenerSerieAsignada(pacienteId: string) { 
+  const { data, error } = await supabase.from('Paciente').select('serieAsignada').eq('id', pacienteId).single();
+  if (error || !data || !data.serieAsignada) throw new Error('No tienes una serie terapéutica asignada.');
+  return data.serieAsignada;
 }
 
-export async function registrarSesionCompletada(pacienteId: string, datosSesion: { dolorInicio: number, dolorFin: number, comentario: string }): Promise<{ message: string }> {
-  const pacienteIndex = pacientes.findIndex(p => p.id === pacienteId);
-  if (pacienteIndex === -1) throw new Error('Paciente no encontrado');
-  const paciente = pacientes[pacienteIndex];
+export async function registrarSesionCompletada(pacienteId: string, datosSesion: { dolorInicio: number, dolorFin: number, comentario: string }) {
+  const { data: paciente, error: findError } = await supabase.from('Paciente').select('id, serieAsignada, historialSesiones').eq('id', pacienteId).single();
+  if (findError || !paciente) throw new Error('Paciente no encontrado');
   if (!paciente.serieAsignada) throw new Error('No se puede registrar una sesión sin una serie asignada.');
 
   const nuevaSesion: HistorialSesion = {
@@ -74,14 +75,24 @@ export async function registrarSesionCompletada(pacienteId: string, datosSesion:
     fecha: new Date().toISOString(),
     ...datosSesion
   };
-  paciente.historialSesiones.push(nuevaSesion);
-  if (paciente.serieAsignada) paciente.serieAsignada.sesionesCompletadas++;
-  pacientes[pacienteIndex] = paciente;
+
+  const historialActualizado = [...(paciente.historialSesiones || []), nuevaSesion];
+  const serieActualizada = {
+    ...paciente.serieAsignada,
+    sesionesCompletadas: paciente.serieAsignada.sesionesCompletadas + 1
+  };
+
+  const { error: updateError } = await supabase.from('Paciente').update({
+    historialSesiones: historialActualizado,
+    serieAsignada: serieActualizada
+  }).eq('id', pacienteId);
+
+  if (updateError) throw new Error('Error al registrar la sesión.');
   return { message: 'Sesión registrada con éxito' };
 }
 
-export async function obtenerHistorialDePaciente(pacienteId: string): Promise<HistorialSesion[]> {
-  const paciente = pacientes.find(p => p.id === pacienteId);
-  if (!paciente) throw new Error('Paciente no encontrado');
-  return paciente.historialSesiones || [];
+export async function obtenerHistorialDePaciente(pacienteCedula: string) { 
+  const { data, error } = await supabase.from('Paciente').select('historialSesiones').eq('cedula', pacienteCedula).single();
+  if (error || !data) throw new Error('Paciente no encontrado.');
+  return data.historialSesiones || [];
 }

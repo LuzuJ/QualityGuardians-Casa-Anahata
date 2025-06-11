@@ -1,5 +1,5 @@
+import { supabase } from '../config/supabaseClient';
 import { Serie } from '../models/serie';
-import { series } from '../database/series';
 import { v4 as uuidv4 } from 'uuid';
 
 export async function crearSerie(data: Omit<Serie, 'id'>): Promise<Serie> {
@@ -7,17 +7,36 @@ export async function crearSerie(data: Omit<Serie, 'id'>): Promise<Serie> {
     throw new Error('Datos incompletos para la serie');
   }
 
-  const nueva: Serie = {
+  const nuevaSerieConId = {
     id: uuidv4(),
     ...data
   };
 
-  series.push(nueva);
-  return nueva;
+  // Lógica de Supabase para insertar la nueva serie
+  const { data: serieCreada, error } = await supabase
+    .from('Series') // Nombre EXACTO de tu tabla en Supabase
+    .insert(nuevaSerieConId)
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Error al crear la serie:", error);
+    throw new Error("No se pudo crear la serie en la base de datos.");
+  }
+
+  return serieCreada;
 }
 
 export async function obtenerTodasLasSeries(): Promise<Serie[]> {
-  // Cuando uses Supabase, aquí irá la llamada a la base de datos
-  // await supabase.from('series').select('*');
-  return series;
+  // Lógica de Supabase para seleccionar todas las series
+  const { data, error } = await supabase
+    .from('Series')
+    .select('*');
+
+  if (error) {
+    console.error("Error al obtener las series:", error);
+    throw new Error("No se pudieron obtener las series.");
+  }
+
+  return data || [];
 }

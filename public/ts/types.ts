@@ -11,7 +11,7 @@ export interface HistorialSesion {
 
 // Interfaz Paciente completa
 export interface Paciente {
-  id: string;
+  cedula: string;
   nombre: string;
   correo: string;
   fechaNacimiento: string;
