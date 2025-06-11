@@ -1,4 +1,5 @@
 import { fetchApi } from './api';
+import { showToast } from './utils';
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.querySelector<HTMLFormElement>('.formulario');
@@ -10,17 +11,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const password = data.get('password') as string;
         const confirmar = data.get('confirmar') as string;
 
-        if (password !== confirmar) return alert('Las contraseñas no coinciden.');
+        if (password !== confirmar) {
+            showToast('Las contraseñas no coinciden.', 'error');
+            return;
+        }
 
         try {
             await fetchApi('/instructores', {
                 method: 'POST',
                 body: JSON.stringify({ nombre, correo, contraseña: password })
             });
-            alert('¡Registro exitoso! Redirigiendo para iniciar sesión.');
-            window.location.href = 'inicioSesion.html';
+            showToast('¡Registro exitoso! Redirigiendo...', 'success');
+            setTimeout(() => window.location.href = 'inicioSesion.html', 2000);
         } catch (error) {
-            if (error instanceof Error) alert('Error: ' + error.message);
+            if (error instanceof Error) showToast(`Error: ${error.message}`, 'error');
         }
     });
 });

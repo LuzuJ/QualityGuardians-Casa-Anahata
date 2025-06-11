@@ -4,13 +4,15 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-  "dev:backend": "ts-node src/index.ts",
-  "dev:frontend": "vite",
-  "build:backend": "tsc",
-  "build:frontend": "vite build",
-  "start": "node dist/backend/index.js"
-},
+    "dev": "concurrently \"npm:dev:backend\" \"npm:dev:frontend\"",
+    "dev:backend": "ts-node src/index.ts",
+    "dev:frontend": "vite",
+    "build:backend": "tsc",
+    "build:frontend": "vite build",
+    "start": "node dist/backend/index.js"
+  },
   "dependencies": {
+    "@supabase/supabase-js": "^2.50.0",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
@@ -26,7 +28,8 @@
     "@types/node": "^22.15.29",
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5"
   },
   "repository": {
     "type": "git",

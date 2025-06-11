@@ -1,4 +1,5 @@
 import { fetchApi } from "./api";
+import { showToast } from "./utils";
 import type { Postura } from "./types";
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -11,11 +12,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     let todasLasPosturas: Postura[] = [];
     try {
         todasLasPosturas = await fetchApi<Postura[]>('/posturas');
-    } catch (e) { if (e instanceof Error) alert(e.message); }
+    } catch (e) {
+        if (e instanceof Error) showToast(`Error al cargar posturas: ${e.message}`, 'error');
+    }
 
     const populatePosturaSelect = (select: HTMLSelectElement, posturas: Postura[]) => {
         select.innerHTML = '<option value="">Selecciona una postura</option>';
-        posturas.forEach(p => select.add(new Option(p.nombreEspanol, p.id)));
+        posturas.forEach(p => select.add(new Option(p.nombre, p.id)));
     };
     
     tipoTerapiaSelect.addEventListener('change', () => {
@@ -52,8 +55,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         try {
             await fetchApi('/series', { method: 'POST', body: JSON.stringify(datosSerie) });
-            alert('Serie creada con éxito');
+            showToast('Serie creada con éxito', 'success');
             form.reset();
-        } catch (error) { if (error instanceof Error) alert(error.message); }
+        } catch (error) {
+            if (error instanceof Error) showToast(`Error: ${error.message}`, 'error');
+        }
     });
 });

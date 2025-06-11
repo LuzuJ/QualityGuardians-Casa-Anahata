@@ -1,16 +1,27 @@
 import { RequestHandler } from "express";
-import { obtenerTodasLasPosturas } from "../services/posturaService";
+import { obtenerTodasLasPosturas, obtenerPosturaPorId } from "../services/posturaService";
 
 export const listarPosturasHandler: RequestHandler = async (req, res) => {
     try {
-        // Llama al servicio para obtener los datos
         const posturas = await obtenerTodasLasPosturas();
-
-        // Envía los datos como respuesta JSON con un estado 200 (OK)
         res.status(200).json(posturas);
+    } catch (error: any) {
+        res.status(500).json({ message: "Error en el servidor al obtener las posturas", error: error.message });
+    }
+};
+
+export const obtenerPosturaHandler: RequestHandler = async (req, res) => {
+    try {
+        const idPostura = req.params.id;
+        const postura = await obtenerPosturaPorId(idPostura);
+
+        if (!postura) {
+            res.status(404).json({ message: 'Postura no encontrada' });
+            return;
+        }
+        res.status(200).json(postura);
 
     } catch (error: any) {
-        // Si algo sale mal, envía un error
-        res.status(500).json({ message: "Error en el servidor al obtener las posturas", error: error.message });
+        res.status(500).json({ message: "Error en el servidor al obtener la postura" });
     }
 };

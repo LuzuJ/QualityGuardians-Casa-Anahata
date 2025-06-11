@@ -1,4 +1,5 @@
 import { fetchApi } from './api';
+import { showToast } from './utils';
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.querySelector<HTMLFormElement>('.formulario');
@@ -9,7 +10,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const correo = (form?.querySelector('input[name="correo"]') as HTMLInputElement)?.value;
         const password = (form?.querySelector('input[name="password"]') as HTMLInputElement)?.value;
 
-        if (!correo || !password) return alert('Por favor, ingresa correo y contraseña.');
+        if (!correo || !password) {
+            showToast('Por favor, ingresa correo y contraseña.', 'error');
+            return;
+        }
 
         try {
             const loginPayload = {
@@ -31,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
             else throw new Error('Rol desconocido recibido del servidor.');
 
         } catch (error) {
-            if (error instanceof Error) alert('Error al iniciar sesión: ' + error.message);
+            if (error instanceof Error) showToast(`Error: ${error.message}`, 'error');
         }
     };
 

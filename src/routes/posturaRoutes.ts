@@ -1,11 +1,11 @@
 import express from 'express';
-import { listarPosturasHandler } from '../controllers/posturaController';
-import { verificarInstructor } from '../middlewares/middleware';
+import { listarPosturasHandler, obtenerPosturaHandler } from '../controllers/posturaController';
+import { verificarToken } from '../middlewares/middleware';
 
 const router = express.Router();
 
-// Cuando llegue una petición GET a la raíz ('/'), se ejecutará el middleware
-// y luego el manejador 'listarPosturasHandler'.
-router.get('/', verificarInstructor, listarPosturasHandler);
+
+router.get('/', verificarToken, listarPosturasHandler);
+router.get('/:id', verificarToken, obtenerPosturaHandler);
 
 export default router;

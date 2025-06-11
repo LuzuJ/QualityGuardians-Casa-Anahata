@@ -1,4 +1,5 @@
 import { fetchApi } from "./api";
+import { showToast } from "./utils";
 import type { Postura } from "./types";
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -18,8 +19,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         const video = container.querySelector<HTMLVideoElement>('video');
         if (video) {
             const source = video.querySelector('source');
-            if (source) source.src = postura.videoUrl;
+            if (source) source.src = postura.videoUrl ?? '';
             video.load();
         }
-    } catch (e) { if (e instanceof Error) alert(e.message); }
+    } catch (e) { if (e instanceof Error) showToast(`Error al cargar postura: ${e.message}`, 'error'); }
 });

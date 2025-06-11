@@ -1,11 +1,11 @@
 import express from 'express';
 import { crearSerieHandler, listarSeriesHandler } from '../controllers/serieController';
-import { verificarInstructor } from '../middlewares/middleware';
+import { verificarToken } from '../middlewares/middleware';
 
 const router = express.Router();
 
-router.post('/', verificarInstructor, crearSerieHandler);
+router.post('/', verificarToken, crearSerieHandler);
 
-router.get('/', verificarInstructor, listarSeriesHandler);
+router.get('/', verificarToken, listarSeriesHandler);
 
 export default router;

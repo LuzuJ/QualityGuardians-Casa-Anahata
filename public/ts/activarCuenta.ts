@@ -1,4 +1,5 @@
 import { fetchApi } from './api';
+import { showToast } from './utils'; // Importa la nueva función
 
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.querySelector<HTMLFormElement>('.formulario');
@@ -12,23 +13,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const confirmarContraseña = data.get('confirmarContraseña') as string;
 
     if (nuevaContraseña !== confirmarContraseña) {
-      alert('Las contraseñas no coinciden. Por favor, inténtalo de nuevo.');
+      showToast('Las contraseñas no coinciden.', 'error');
       return;
     }
 
     try {
-      // Llamamos al nuevo endpoint que creamos en el backend
       const resultado = await fetchApi<{ message: string }>('/pacientes/establecer-password', {
         method: 'POST',
         body: JSON.stringify({ correo, nuevaContraseña })
       });
 
-      alert(resultado.message + ' Serás redirigido para iniciar sesión.');
-      window.location.href = 'inicioSesion.html';
+      showToast(resultado.message, 'success');
+      setTimeout(() => {
+        window.location.href = 'inicioSesion.html';
+      }, 2000); // Redirige después de 2 segundos para que se vea la notificación
 
     } catch (error) {
       if (error instanceof Error) {
-        alert('Error al activar la cuenta: ' + error.message);
+        showToast(`Error: ${error.message}`, 'error');
       }
     }
   });

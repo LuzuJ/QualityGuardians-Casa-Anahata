@@ -1,42 +1,89 @@
-import { fetchApi } from './api';
+import { fetchApi, showToast } from './api';
 import type { Paciente } from './types';
 
 document.addEventListener('DOMContentLoaded', async () => {
     const addPatientForm = document.querySelector<HTMLFormElement>('.formulario');
     const patientListUl = document.querySelector<HTMLUListElement>('h3 + ul');
-    if (!addPatientForm || !patientListUl) return;
+    const formTitle = addPatientForm?.querySelector<HTMLHeadingElement>('h3');
+    const submitButton = addPatientForm?.querySelector<HTMLButtonElement>('button[type="submit"]');
+
+    // REFACTOR: Obtenemos referencia a los inputs una sola vez
+    const nombreInput = addPatientForm?.querySelector<HTMLInputElement>('input[type="text"]');
+    const correoInput = addPatientForm?.querySelector<HTMLInputElement>('input[type="email"]');
+    const telefonoInput = addPatientForm?.querySelector<HTMLInputElement>('input[type="tel"]');
+    const fechaInput = addPatientForm?.querySelector<HTMLInputElement>('input[type="date"]');
+
+    if (!addPatientForm || !patientListUl || !formTitle || !submitButton || !nombreInput || !correoInput || !telefonoInput || !fechaInput) return;
+
+    let modoEdicion = false;
+    let pacienteIdEditando: string | null = null;
 
     const cargarPacientes = async () => {
         try {
             const pacientes = await fetchApi<Paciente[]>('/pacientes');
             patientListUl.innerHTML = '';
-            pacientes.forEach(p => {
+            pacientes.forEach(paciente => {
                 const li = document.createElement('li');
-                li.textContent = `${p.nombre} `;
+                li.textContent = `${paciente.nombre} `;
                 const editButton = document.createElement('button');
                 editButton.className = 'btn-primario';
-                editButton.textContent = 'Ver Historial';
-                editButton.onclick = () => window.location.href = `detalleSesion.html?pacienteId=${p.id}`;
+                editButton.textContent = 'Editar';
+                editButton.onclick = () => iniciarEdicion(paciente);
                 li.appendChild(editButton);
                 patientListUl.appendChild(li);
             });
-        } catch (error) { if (error instanceof Error) alert(error.message); }
+        } catch (error) {
+            if (error instanceof Error) showToast(`Error al cargar pacientes: ${error.message}`, 'error');
+        }
+    };
+
+    const iniciarEdicion = (paciente: Paciente) => {
+    modoEdicion = true;
+    pacienteIdEditando = paciente.id;
+    nombreInput.value = paciente.nombre;
+    correoInput.value = paciente.correo;
+    telefonoInput.value = paciente.telefono || ''; 
+    fechaInput.value = paciente.fechaNacimiento;
+
+    formTitle.textContent = 'Editar Paciente';
+    submitButton.textContent = 'Guardar Cambios';
+    window.scrollTo(0, 0);
+};
+    
+    // BUG FIX: Implementamos la lógica de la función
+    const resetearFormulario = () => {
+        modoEdicion = false;
+        pacienteIdEditando = null;
+        addPatientForm.reset();
+        formTitle.textContent = 'Agregar nuevo paciente';
+        submitButton.textContent = 'Agregar paciente';
     };
 
     addPatientForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const data = {
-            nombre: (addPatientForm.querySelector('input[type="text"]') as HTMLInputElement).value,
-            correo: (addPatientForm.querySelector('input[type="email"]') as HTMLInputElement).value,
-            telefono: (addPatientForm.querySelector('input[type="tel"]') as HTMLInputElement).value,
-            fechaNacimiento: (addPatientForm.querySelector('input[type="date"]') as HTMLInputElement).value
+            nombre: nombreInput.value,
+            correo: correoInput.value,
+            telefono: telefonoInput.value,
+            fechaNacimiento: fechaInput.value
         };
         try {
-            await fetchApi('/pacientes', { method: 'POST', body: JSON.stringify(data) });
-            alert('Paciente agregado');
-            addPatientForm.reset();
+            if (modoEdicion && pacienteIdEditando) {
+                await fetchApi(`/pacientes/${pacienteIdEditando}`, {
+                    method: 'PUT',
+                    body: JSON.stringify(data)
+                });
+                showToast('Paciente actualizado con éxito', 'success');
+            } else {
+                await fetchApi('/pacientes', {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                });
+                showToast('Paciente agregado con éxito', 'success');
+            }
+            resetearFormulario();
             await cargarPacientes();
-        } catch (error) { if (error instanceof Error) alert(error.message); }
+        } catch (error) { if (error instanceof Error) showToast('Error: ' + error.message, 'error'); }
     });
 
     await cargarPacientes();
