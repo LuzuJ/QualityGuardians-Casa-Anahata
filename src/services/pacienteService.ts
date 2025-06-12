@@ -146,13 +146,13 @@ export async function obtenerSerieAsignada(pacienteCedula: string) {
 }
 
 export async function registrarSesionCompletada(pacienteId: string, datosSesion: { dolorInicio: number, dolorFin: number, comentario: string }) {
-  const { data: paciente, error: findError } = await supabase.from('Paciente').select('id, serieAsignada, historialSesiones').eq('id', pacienteId).single();
+  const { data: paciente, error: findError } = await supabase.from('Paciente').select('cedula, serieAsignada, historialSesiones').eq('cedula', pacienteId).single();
   if (findError || !paciente) throw new Error('Paciente no encontrado');
   if (!paciente.serieAsignada) throw new Error('No se puede registrar una sesión sin una serie asignada.');
 
   const nuevaSesion: HistorialSesion = {
     id: uuidv4(),
-    pacienteId: paciente.id,
+    pacienteId: paciente.cedula,
     serieId: paciente.serieAsignada.idSerie,
     fecha: new Date().toISOString(),
     ...datosSesion
@@ -167,7 +167,7 @@ export async function registrarSesionCompletada(pacienteId: string, datosSesion:
   const { error: updateError } = await supabase.from('Paciente').update({
     historialSesiones: historialActualizado,
     serieAsignada: serieActualizada
-  }).eq('id', pacienteId);
+  }).eq('cedula', pacienteId);
 
   if (updateError) throw new Error('Error al registrar la sesión.');
   return { message: 'Sesión registrada con éxito' };
