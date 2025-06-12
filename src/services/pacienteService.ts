@@ -4,15 +4,61 @@ import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 import { HistorialSesion } from '../models/historialSesion';
 
-export async function registrarPaciente(datos: Omit<Paciente, 'id' | 'contraseña' | 'estado' | 'historialSesiones' | 'serieAsignada'>) {
-  const { data: existente } = await supabase.from('Paciente').select('cedula').eq('correo', datos.correo).single();
-  if (existente) throw new Error('El correo ya está registrado');
+export async function registrarPaciente(datos: any) { // Usamos 'any' temporalmente para facilitar la depuración
+  console.log('--- PASO 1: Ingresando a registrarPaciente ---');
+  console.log('Datos recibidos del controlador:', datos);
 
-  const nuevoPaciente = { ...datos, estado: 'pendiente', historialSesiones: [] };
+  try {
+    // Verificación de correo
+    const { data: existente } = await supabase.from('Paciente').select('cedula').eq('correo', datos.correo).single();
+    if (existente) {
+      console.error('Error: El correo ya existe.');
+      throw new Error('El correo ya está registrado');
+    }
 
-  const { data, error } = await supabase.from('Paciente').insert(nuevoPaciente).select().single();
-  if (error) throw new Error('Error al registrar al paciente.');
-  return data;
+    // Verificación de cédula
+    const { data: cedulaExistente } = await supabase.from('Paciente').select('cedula').eq('cedula', datos.cedula).single();
+    if (cedulaExistente) {
+      console.error('Error: La cédula ya existe.');
+      throw new Error('La cédula ya está registrada');
+    }
+
+    // --- Creamos el objeto manualmente para asegurar que los campos son correctos ---
+    const nuevoPaciente = {
+      cedula: datos.cedula,
+      nombre: datos.nombre,
+      correo: datos.correo,
+      telefono: datos.telefono,
+      fechaNacimiento: datos.fechaNacimiento,
+      instructorId: datos.instructorId,
+      // ---- Campos que no vienen del formulario pero son necesarios ----
+      estado: 'pendiente',
+      historialSesiones: []
+      // No incluimos 'genero' u 'observaciones' porque el formulario no los envía.
+      // Si fueran obligatorios (NOT NULL) en la BD, la inserción fallaría.
+    };
+    
+    console.log('--- PASO 2: Objeto listo para insertar ---');
+    console.log(nuevoPaciente);
+
+    const { data, error } = await supabase.from('Paciente').insert(nuevoPaciente).select().single();
+
+    // Este bloque es el más importante. Si hay un error de BD, se mostrará aquí.
+    if (error) {
+      console.error('--- ¡ERROR DE SUPABASE AL INSERTAR! ---');
+      console.error(error);
+      throw new Error('Error de la base de datos al intentar registrar al paciente.');
+    }
+
+    console.log('--- PASO 3: Paciente registrado con éxito en la BD ---');
+    return data;
+
+  } catch (err: any) {
+    // Este bloque capturará cualquier error que lancemos arriba (correo/cédula duplicada)
+    console.error('--- Error final capturado por el servicio ---');
+    console.error(err.message);
+    throw err; // Re-lanzamos el error para que el controlador envíe el 400
+  }
 }
 
 export async function actualizarPaciente(cedula: string, datos: Partial<Omit<Paciente, 'id' | 'instructorId'>>) {

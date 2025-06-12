@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     tipoTerapiaSelect.addEventListener('change', () => {
         const terapia = tipoTerapiaSelect.value;
-        const posturasFiltradas = todasLasPosturas.filter(p => p.terapiasAsociadas.includes(terapia));
+        const posturasFiltradas = todasLasPosturas.filter(p => p.tipoTerapias.includes(terapia));
         const primerSelect = posturasContainer.querySelector<HTMLSelectElement>('select[name="posturas[]"]');
         if (primerSelect) {
             populatePosturaSelect(primerSelect, posturasFiltradas);
@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             nombre: formData.get('nombreSerie') as string,
             tipoTerapia: formData.get('tipoTerapia') as string,
             sesionesRecomendadas: parseInt(formData.get('numSesiones') as string, 10),
-            secuencia: secuencia
+            posturas: secuencia
         };
         
         try {

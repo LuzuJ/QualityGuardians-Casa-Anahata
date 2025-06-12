@@ -48,10 +48,10 @@ export const establecerPasswordPacienteHandler: RequestHandler = async (req, res
 
 export const asignarSerieHandler: RequestHandler = async (req, res) => {
   try {
-    const { id: pacienteId } = req.params;
+    const { cedula } = req.params;
     const { serieId } = req.body;
     if (!serieId) return res.status(400).json({ error: 'Se requiere el ID de la serie.' });
-    const paciente = await asignarSerieAPaciente(pacienteId, serieId);
+    const paciente = await asignarSerieAPaciente(cedula, serieId);
     res.status(200).json({ message: 'Serie asignada correctamente', paciente });
   } catch (error: any) {
     res.status(404).json({ error: error.message });

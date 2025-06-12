@@ -8,7 +8,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const submitButton = addPatientForm?.querySelector<HTMLButtonElement>('button[type="submit"]');
 
     // REFACTOR: Obtenemos referencia a los inputs una sola vez
-    const nombreInput = addPatientForm?.querySelector<HTMLInputElement>('input[type="text"]');
+    const cedulaInput = addPatientForm?.querySelector<HTMLInputElement>('input[name="cedula"]');
+    const nombreInput = addPatientForm?.querySelector<HTMLInputElement>('input[name="nombre"]');
     const correoInput = addPatientForm?.querySelector<HTMLInputElement>('input[type="email"]');
     const telefonoInput = addPatientForm?.querySelector<HTMLInputElement>('input[type="tel"]');
     const fechaInput = addPatientForm?.querySelector<HTMLInputElement>('input[type="date"]');
@@ -40,10 +41,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     const iniciarEdicion = (paciente: Paciente) => {
     modoEdicion = true;
     pacienteIdEditando = paciente.cedula;
-    nombreInput.value = paciente.nombre;
-    correoInput.value = paciente.correo;
-    telefonoInput.value = paciente.telefono || ''; 
-    fechaInput.value = paciente.fechaNacimiento;
+
+    if (cedulaInput) {
+        cedulaInput.value = paciente.cedula;
+        cedulaInput.readOnly = true; // Hacer que el campo no se pueda editar
+    }
+    if (nombreInput) nombreInput.value = paciente.nombre;
+    if (correoInput) correoInput.value = paciente.correo;
+    if (telefonoInput) telefonoInput.value = paciente.telefono || '';
+    if (fechaInput) fechaInput.value = paciente.fechaNacimiento;
 
     formTitle.textContent = 'Editar Paciente';
     submitButton.textContent = 'Guardar Cambios';
@@ -57,6 +63,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         addPatientForm.reset();
         formTitle.textContent = 'Agregar nuevo paciente';
         submitButton.textContent = 'Agregar paciente';
+
+        if (cedulaInput) cedulaInput.readOnly = false;
     };
 
     addPatientForm.addEventListener('submit', async (e) => {

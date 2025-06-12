@@ -38,10 +38,10 @@ export async function loginInstructor(correo: string, contraseña: string): Prom
 export async function loginPaciente(correo: string, contraseña: string): Promise<LoginResponse> {
   const { data, error } = await supabase
     .from('Paciente')
-    .select('id, contraseña, estado')
+    .select('cedula, contraseña, estado')
     .eq('correo', correo)
     .single();
-  const paciente = data as { id: string; contraseña: string; estado: string } | null;
+  const paciente = data as { cedula: string; contraseña: string; estado: string } | null;
 
   if (error || !paciente || paciente.estado !== 'activo' || !paciente.contraseña) {
     throw new Error('Credenciales incorrectas o cuenta no activada.');
@@ -53,7 +53,7 @@ export async function loginPaciente(correo: string, contraseña: string): Promis
   }
   
   const token = jwt.sign(
-    { id: paciente.id, correo: correo, rol: 'paciente' },
+    { id: paciente.cedula, correo: correo, rol: 'paciente' },
     process.env.JWT_SECRET ?? 'secret',
     { expiresIn: '8h' }
   );

@@ -1,6 +1,6 @@
 export interface Postura {
   id: string;
-  nombre: string; // nombre en español
+  nombre: string; 
   nombreSanskrito?: string;
   tipoTerapias: string[];
   fotoUrl: string;

@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             fetchApi<Paciente[]>('/pacientes'),
             fetchApi<Serie[]>('/series')
         ]);
-        pacientes.forEach(p => pacienteSelect.add(new Option(p.nombre, p.id)));
+        pacientes.forEach(p => pacienteSelect.add(new Option(p.nombre, p.cedula)));
         series.forEach(s => serieSelect.add(new Option(s.nombre, s.id)));
     } catch (e) {
         if (e instanceof Error) showToast(`Error al cargar datos: ${e.message}`, 'error');

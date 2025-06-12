@@ -21,13 +21,13 @@ export interface Paciente {
 // Interfaz Postura corregida (con arrays de strings)
 export interface Postura {
   id: string;
-  nombreEspanol: string; 
+  nombre: string; 
   nombreSanskrito?: string;
   fotoUrl: string;
   videoUrl: string;
   instrucciones: string[]; 
   beneficios: string[];    
-  terapiasAsociadas: string[];
+  tipoTerapias: string[];
 }
 
 // Interfaz Serie completa
