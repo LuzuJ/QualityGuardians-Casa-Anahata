@@ -23,26 +23,23 @@
 
     <div class="contenido-panel">
       <div class="tarjeta">
-        <h2>Postura 1: Tadasana</h2>
-        <!-- Aquí se cargará la imagen de la postura desde la base de datos -->
-        <div class="imagen-postura">
-          <!-- Ejemplo estático -->
-          <img src="img/tadasana.png" alt="Tadasana" style="max-width: 100%; margin-bottom: 1rem;">
-        </div>
+    <h2 id="postura-titulo">Cargando postura...</h2>
+    
+    <div class="imagen-postura">
+      <img id="postura-imagen" src="" alt="Postura actual" style="max-width: 100%; margin-bottom: 1rem; display: none;">
+    </div>
 
-        <!-- Aquí se puede implementar un contador si luego se desea -->
-        <p>Duración sugerida: 30 segundos</p>
+    <div id="timer-display" style="font-size: 3rem; font-weight: bold; margin: 1rem 0; color: #1ABC83;">--:--</div>
+    <p id="postura-duracion">Duración sugerida: -- minuto(s)</p>
 
-        <div style="margin-top: 2rem;">
-          <a href="visualizarPosturas.html" class="btn-primario">Ver detalles</a>
-          <a href="ejecucionSerie.html" class="btn-primario">Siguiente postura</a>
-        </div>
-
-        <!-- Comentario para desarrolladores:
-             Aquí se debe cargar dinámicamente cada postura según el paciente y su serie,
-             usando lenguaje del lado del servidor como PHP o Python con la base de datos.
-        -->
-      </div>
+    <div style="margin-top: 2rem; display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center;">
+        <button id="start-pause-btn" class="btn-primario">Iniciar</button>
+        <button id="reset-btn" class="btn-primario">Reiniciar</button>
+        <a id="detalles-btn" href="#" class="btn-primario">Ver detalles</a>
+        <a id="anterior-btn" href="#"  class="btn-primario">Postura Anterior</a>
+        <a id="siguiente-btn" href="#" class="btn-primario">Siguiente postura</a>
+    </div>
+</div>
     </div>
   </div>
 </body>

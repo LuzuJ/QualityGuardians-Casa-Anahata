@@ -296,3 +296,34 @@ body, html {
 .toast.error {
     background-color: #dc3545; /* Rojo error */
 }
+/* --- ESTILOS PARA BOTÓN SECUNDARIO --- */
+.btn-secundario {
+  background-color: transparent;
+  color: #555; /* Un color de texto más neutro */
+  border: 2px solid #ccc; /* Borde sutil */
+  padding: calc(0.8rem - 2px); /* Ajustamos el padding para compensar el borde */
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none; /* Para que el enlace 'Ver detalles' no esté subrayado */
+  display: inline-flex; /* Para alinear el texto verticalmente */
+  align-items: center;
+  justify-content: center;
+  line-height: 1.2;
+}
+
+.btn-secundario:hover {
+  background-color: #f0f0f0; /* Un color de fondo suave al pasar el mouse */
+  border-color: #bbb;
+  color: #333;
+}
+
+.controles-sesion {
+  margin-top: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+}
