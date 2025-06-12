@@ -41,6 +41,8 @@ export async function loginPaciente(correo: string, contraseña: string): Promis
     .select('cedula, contraseña, estado')
     .eq('correo', correo)
     .single();
+  
+  // CORRECCIÓN: Actualizamos el tipo para que espere 'id'.
   const paciente = data as { cedula: string; contraseña: string; estado: string } | null;
 
   if (error || !paciente || paciente.estado !== 'activo' || !paciente.contraseña) {

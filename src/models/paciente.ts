@@ -1,7 +1,6 @@
 import { HistorialSesion } from "./historialSesion";
 
 export interface Paciente {
-  id: string;
   cedula: string;
   nombre: string;
   correo: string;

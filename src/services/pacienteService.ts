@@ -1,64 +1,55 @@
+import { obtenerPosturaPorId } from './posturaService';
 import { supabase } from '../config/supabaseClient';
 import { Paciente } from '../models/paciente';
 import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 import { HistorialSesion } from '../models/historialSesion';
 
-export async function registrarPaciente(datos: any) { // Usamos 'any' temporalmente para facilitar la depuración
-  console.log('--- PASO 1: Ingresando a registrarPaciente ---');
-  console.log('Datos recibidos del controlador:', datos);
+type RegistrarPacienteData = Omit<Paciente, 'contrasena' | 'estado' | 'serieAsignada' | 'historialSesiones'>;
 
-  try {
-    // Verificación de correo
-    const { data: existente } = await supabase.from('Paciente').select('cedula').eq('correo', datos.correo).single();
-    if (existente) {
-      console.error('Error: El correo ya existe.');
-      throw new Error('El correo ya está registrado');
-    }
+export async function registrarPaciente(datos: RegistrarPacienteData) {
+  // 1. Verificar si el correo ya existe
+  const { data: existentePorCorreo } = await supabase
+    .from('Paciente')
+    .select('cedula')
+    .eq('correo', datos.correo)
+    .single();
 
-    // Verificación de cédula
-    const { data: cedulaExistente } = await supabase.from('Paciente').select('cedula').eq('cedula', datos.cedula).single();
-    if (cedulaExistente) {
-      console.error('Error: La cédula ya existe.');
-      throw new Error('La cédula ya está registrada');
-    }
-
-    // --- Creamos el objeto manualmente para asegurar que los campos son correctos ---
-    const nuevoPaciente = {
-      cedula: datos.cedula,
-      nombre: datos.nombre,
-      correo: datos.correo,
-      telefono: datos.telefono,
-      fechaNacimiento: datos.fechaNacimiento,
-      instructorId: datos.instructorId,
-      // ---- Campos que no vienen del formulario pero son necesarios ----
-      estado: 'pendiente',
-      historialSesiones: []
-      // No incluimos 'genero' u 'observaciones' porque el formulario no los envía.
-      // Si fueran obligatorios (NOT NULL) en la BD, la inserción fallaría.
-    };
-    
-    console.log('--- PASO 2: Objeto listo para insertar ---');
-    console.log(nuevoPaciente);
-
-    const { data, error } = await supabase.from('Paciente').insert(nuevoPaciente).select().single();
-
-    // Este bloque es el más importante. Si hay un error de BD, se mostrará aquí.
-    if (error) {
-      console.error('--- ¡ERROR DE SUPABASE AL INSERTAR! ---');
-      console.error(error);
-      throw new Error('Error de la base de datos al intentar registrar al paciente.');
-    }
-
-    console.log('--- PASO 3: Paciente registrado con éxito en la BD ---');
-    return data;
-
-  } catch (err: any) {
-    // Este bloque capturará cualquier error que lancemos arriba (correo/cédula duplicada)
-    console.error('--- Error final capturado por el servicio ---');
-    console.error(err.message);
-    throw err; // Re-lanzamos el error para que el controlador envíe el 400
+  if (existentePorCorreo) {
+    throw new Error('El correo ya está registrado');
   }
+
+  // 2. Verificar si la cédula ya existe
+  const { data: existentePorCedula } = await supabase
+    .from('Paciente')
+    .select('cedula')
+    .eq('cedula', datos.cedula)
+    .single();
+
+  if (existentePorCedula) {
+    throw new Error('La cédula ya está registrada');
+  }
+
+  // 3. Preparar y registrar el nuevo paciente
+  const nuevoPaciente = {
+    ...datos,
+    estado: 'pendiente',
+    historialSesiones: [],
+  };
+
+  const { data, error } = await supabase
+    .from('Paciente')
+    .insert(nuevoPaciente)
+    .select()
+    .single();
+
+  if (error) {
+    // Es buena práctica mantener un log en el backend para errores críticos de base de datos.
+    console.error('Error de Supabase al insertar paciente:', error); 
+    throw new Error('Error al registrar al paciente.');
+  }
+
+  return data;
 }
 
 export async function actualizarPaciente(cedula: string, datos: Partial<Omit<Paciente, 'id' | 'instructorId'>>) {
@@ -103,10 +94,55 @@ export async function asignarSerieAPaciente(pacienteCedula: string, serieId: str
   return data;
 }
 
-export async function obtenerSerieAsignada(pacienteId: string) { 
-  const { data, error } = await supabase.from('Paciente').select('serieAsignada').eq('id', pacienteId).single();
-  if (error || !data || !data.serieAsignada) throw new Error('No tienes una serie terapéutica asignada.');
-  return data.serieAsignada;
+export async function obtenerSerieAsignada(pacienteCedula: string) { 
+  // 1. Obtener la información de la asignación desde la tabla Paciente
+  const { data: paciente, error: errorPaciente } = await supabase
+    .from('Paciente')
+    .select('serieAsignada')
+    .eq('cedula', pacienteCedula)
+    .single();
+    
+  if (errorPaciente || !paciente || !paciente.serieAsignada) {
+    throw new Error('No tienes una serie terapéutica asignada.');
+  }
+
+  const idSerieAsignada = paciente.serieAsignada.idSerie;
+
+  // 2. Usar ese ID para buscar la serie (aún con datos incompletos de posturas)
+  const { data: serieIncompleta, error: errorSerie } = await supabase
+    .from('Series')
+    .select('*')
+    .eq('id', idSerieAsignada)
+    .single();
+
+  if (errorSerie || !serieIncompleta) {
+      throw new Error('La serie asignada ya no existe o no pudo ser encontrada.');
+  }
+
+  // 3. --- ¡LA PARTE NUEVA E IMPORTANTE! ---
+  // "Enriquecemos" la lista de posturas con sus detalles completos
+  const posturasEnriquecidas = await Promise.all(
+    (serieIncompleta.posturas || []).map(async (p: { idPostura: string, duracionMinutos: number }) => {
+        // Por cada postura, usamos su ID para buscar todos sus detalles
+        const detallesPostura = await obtenerPosturaPorId(p.idPostura);
+        
+        // Devolvemos un nuevo objeto que combina los detalles completos + la duración de esta serie
+        return {
+            ...detallesPostura,
+            duracionMinutos: p.duracionMinutos
+        };
+    })
+  );
+
+  // 4. Preparamos el objeto final para el frontend, con la lista de posturas ya completa
+  const serieParaFrontend = {
+      ...serieIncompleta,
+      secuencia: posturasEnriquecidas, // Renombramos a 'secuencia' como lo espera el frontend
+  };
+  // @ts-ignore
+  delete serieParaFrontend.posturas; // Eliminamos la propiedad original para evitar redundancia
+
+  return serieParaFrontend;
 }
 
 export async function registrarSesionCompletada(pacienteId: string, datosSesion: { dolorInicio: number, dolorFin: number, comentario: string }) {

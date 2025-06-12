@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="/css/styleAnahata.css" />
 </head>
 <body>
-  <script type="module" src="/ts/visualizarPosturas.ts"></script>
+  <script type="module" src="/ts/visualizarPostura.ts"></script>
   <div class="barra">
     <img src="/assets/img/logo.png" alt="Logo Casa Anahata" class="logo">
     <h1 class="marca">Casa Anahata</h1>
@@ -18,19 +18,26 @@
       <h2>Instrucciones de la postura</h2>
 
       <!-- Aquí se mostrarán los detalles extraídos de la base de datos -->
-      <p><strong>Nombre:</strong> Tadasana (Postura de la montaña)</p>
-      <p><strong>Beneficios:</strong> Mejora la postura, activa los músculos de piernas y abdomen.</p>
-      <p><strong>Instrucciones:</strong> Coloca los pies juntos, distribuye el peso equitativamente y levanta los brazos por encima de la cabeza con las palmas enfrentadas.</p>
+      <p><strong>Nombre:</strong> <span id="postura-nombre">Cargando...</span></p>
+      <p><strong>Nombre en Sánscrito:</strong> <span id="postura-sanskrito">Cargando...</span></p>
+      <p><strong>Beneficios:</strong> <span id="postura-beneficios">Cargando...</span></p>
+      <p><strong>Instrucciones:</strong> <span id="postura-instrucciones">Cargando...</span></p>
 
-      <div style="margin: 2rem 0;">
-        <video controls style="width: 100%; max-width: 600px;">
-          <!-- El src debe jalarse de la base de datos -->
-          <source src="videos/tadasana.mp4" type="video/mp4" />
-          Tu navegador no soporta la reproducción de video.
-        </video>
+      <div class="video-container" style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; background: #000;">
+        <iframe 
+          id="youtube-video"
+          style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+          src="" 
+          title="Reproductor de video de YouTube" 
+          frameborder="0" 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+          allowfullscreen>
+        </iframe>
       </div>
 
-      <a href="ejecucionSerie.html" class="btn-primario">Regresar</a>
+      <div style="margin-top: 2rem;">
+        <a href="ejecucionSerie.html" class="btn-primario">Regresar</a>
+      </div>
 
       <!-- Comentario: Esta página debe recibir un ID de postura desde la ejecución
            para cargar dinámicamente los datos e instrucciones desde la base de datos -->

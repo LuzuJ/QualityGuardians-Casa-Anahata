@@ -9,7 +9,7 @@ export interface HistorialSesion {
   comentario: string;
 }
 
-// Interfaz Paciente completa
+// Interfaz Paciente 
 export interface Paciente {
   cedula: string;
   nombre: string;
@@ -18,7 +18,7 @@ export interface Paciente {
   telefono?: string;
 }
 
-// Interfaz Postura corregida (con arrays de strings)
+// Interfaz Postura 
 export interface Postura {
   id: string;
   nombre: string; 
@@ -30,17 +30,13 @@ export interface Postura {
   tipoTerapias: string[];
 }
 
-// Interfaz Serie completa
 export interface Serie {
   id: string;
   nombre: string;
   tipoTerapia: string;
   sesionesRecomendadas: number;
-  secuencia: Array<{
-    idPostura: string;
+  secuencia: Array<Postura & { 
     duracionMinutos: number;
-    nombreEspanol?: string; 
-    fotoUrl?: string;
   }>;
 }
 

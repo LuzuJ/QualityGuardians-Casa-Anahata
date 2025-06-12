@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (posturaActualIndex >= serie.secuencia.length) return finalizarSerie();
         
         const postura = serie.secuencia[posturaActualIndex];
-        titulo!.textContent = `Postura ${posturaActualIndex + 1}: ${postura.nombreEspanol}`;
+        titulo!.textContent = `Postura ${posturaActualIndex + 1}: ${postura.nombre}`;
         if (imagen) {
             imagen.src = postura.fotoUrl || 'path/to/default-image.png';
         }
@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             duracionP.textContent = `Duración: ${postura.duracionMinutos} minuto(s)`;
         }
         if (btnDetalles) {
-            btnDetalles.href = `visualizarPosturas.html?posturaId=${postura.idPostura}`;
+            btnDetalles.href = `visualizarPosturas.html?posturaId=${postura.id}`;
         }
         
         clearTimeout(timerId);
