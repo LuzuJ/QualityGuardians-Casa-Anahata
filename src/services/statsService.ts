@@ -1,5 +1,3 @@
-// src/services/statsService.ts
-
 import { supabase } from '../config/supabaseClient';
 
 export async function obtenerEstadisticasInstructor(instructorId: string) {

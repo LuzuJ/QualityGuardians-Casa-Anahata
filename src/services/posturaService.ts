@@ -1,5 +1,3 @@
-// src/services/posturaService.ts
-
 import { supabase } from '../config/supabaseClient';
 import { Postura } from '../models/postura';
 

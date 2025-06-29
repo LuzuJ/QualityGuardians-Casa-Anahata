@@ -1,5 +1,3 @@
-// public/ts/registroSesion.ts
-
 import { fetchApi } from "./api";
 import { showToast } from "./utils";
 
