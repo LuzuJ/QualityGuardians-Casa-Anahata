@@ -344,3 +344,66 @@ body, html {
   object-fit: cover; /* La propiedad clave: escala la imagen para cubrir el espacio sin deformarla */
   object-position: center; /* Centra la imagen */
 }
+
+
+/* Responsive Adjustments */
+
+@media (max-width: 768px) {
+  .contenedor-izquierdo {
+    width: 100%;
+    min-width: auto;
+    padding: 1rem;
+  }
+
+  .contenedor-formulario {
+    max-width: 90%;
+    padding: 1rem;
+  }
+
+  .fila-doble {
+    flex-direction: column;
+  }
+
+  .btn-grande-centro {
+    max-width: 100%;
+  }
+
+  .contenedor-imagen-postura {
+    height: auto;
+  }
+
+  .imagen-postura {
+    height: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .titulo,
+  .titulo-logo {
+    font-size: 2.5rem;
+  }
+
+  .marca {
+    font-size: 1.2rem;
+  }
+
+  .btn-primario,
+  .btn-secundario {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .panel {
+    flex-direction: column;
+  }
+
+  .menu-lateral {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .contenido-panel {
+    padding: 1rem;
+  }
+}
