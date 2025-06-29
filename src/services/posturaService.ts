@@ -1,23 +1,26 @@
+// src/services/posturaService.ts
+
 import { supabase } from '../config/supabaseClient';
 import { Postura } from '../models/postura';
 
-
 const transformarCampoAArray = (valor: any): string[] => {
   if (Array.isArray(valor)) {
-    return valor; // Si ya es un array (desde un jsonb), lo devuelve tal cual.
+    return valor;
   }
   if (typeof valor === 'string' && valor.length > 0) {
-    return valor.split(';'); // Si es texto, lo convierte usando el delimitador.
+    // Esto asume que los pasos en tu base de datos están separados por punto y coma.
+    // Si usas otro separador, ajústalo aquí.
+    return valor.split(';');
   }
-  return []; // Si es nulo o cualquier otra cosa, devuelve un array vacío.
+  return [];
 };
 
-
+// --- FUNCIÓN CORREGIDA ---
 const transformarPostura = (dbPostura: any): Postura => {
-  // Usamos la nueva función para cada campo que podría ser texto o jsonb
+  // Ahora usamos la función de transformación para TODOS los campos que son arrays
+  const descripcion = transformarCampoAArray(dbPostura.descripcion);
   const beneficios = transformarCampoAArray(dbPostura.beneficios);
   const modificaciones = transformarCampoAArray(dbPostura.modificaciones);
-  const instrucciones = transformarCampoAArray(dbPostura.descripcion);
   const tipoTerapias = transformarCampoAArray(dbPostura.tipoTerapias);
 
   return {
@@ -26,7 +29,8 @@ const transformarPostura = (dbPostura: any): Postura => {
     nombreSanskrito: dbPostura.nombreSanskrito || '',
     fotoUrl: dbPostura.fotoUrl || '',
     videoUrl: dbPostura.videoUrl || '',
-    instrucciones: instrucciones,
+    // Se asigna el resultado de la transformación, que ahora es un array
+    descripcion: descripcion,
     beneficios: beneficios,
     modificaciones: modificaciones,
     tipoTerapias: tipoTerapias,
@@ -34,10 +38,14 @@ const transformarPostura = (dbPostura: any): Postura => {
 };
 
 
-export async function obtenerTodasLasPosturas(): Promise<Postura[]> {
-  const { data, error } = await supabase
-    .from('Postura') 
-    .select('*');  
+export async function obtenerTodasLasPosturas(tipoTerapia?: string): Promise<Postura[]> {
+  let query = supabase.from('Postura').select('*');
+
+  if (tipoTerapia) {
+    query = query.filter('tipoTerapias', 'cs', `["${tipoTerapia}"]`);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     console.error("Error al obtener posturas:", error);
@@ -46,26 +54,24 @@ export async function obtenerTodasLasPosturas(): Promise<Postura[]> {
 
   if (!data) return [];
 
-  // Mapeamos sobre los resultados y transformamos cada uno
   return data.map(transformarPostura);
 }
+
 
 export async function obtenerPosturaPorId(id: string): Promise<Postura | undefined> {
   const { data, error } = await supabase
     .from('Postura')
     .select('*')
-    .eq('id', id)     
-    .single();     
+    .eq('id', id)
+    .single();
 
   if (error) {
     console.error("Error al obtener postura por ID:", error);
-    // No lanzar error si no se encuentra, solo devolver undefined
-    if (error.code === 'PGRST116') return undefined; 
+    if (error.code === 'PGRST116') return undefined;
     throw new Error('Error en la consulta de postura.');
   }
-  
+
   if (!data) return undefined;
 
-  // Transformamos el único resultado
   return transformarPostura(data);
 }

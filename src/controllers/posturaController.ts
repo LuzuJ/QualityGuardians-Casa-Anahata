@@ -3,10 +3,14 @@ import { obtenerTodasLasPosturas, obtenerPosturaPorId } from "../services/postur
 
 export const listarPosturasHandler: RequestHandler = async (req, res) => {
     try {
-        const posturas = await obtenerTodasLasPosturas();
+        // Leemos el parámetro 'tipoTerapia' de la query en la URL (ej: /api/posturas?tipoTerapia=ansiedad)
+        const tipoTerapia = req.query.tipoTerapia as string | undefined;
+        
+        // Pasamos el filtro al servicio
+        const posturas = await obtenerTodasLasPosturas(tipoTerapia);
         res.status(200).json(posturas);
     } catch (error: any) {
-        res.status(500).json({ message: "Error en el servidor al obtener las posturas", error: error.message });
+        res.status(500).json({ error: "Error en el servidor al obtener las posturas: " + error.message });
     }
 };
 

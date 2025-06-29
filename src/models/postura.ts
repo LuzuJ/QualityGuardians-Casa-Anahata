@@ -5,7 +5,7 @@ export interface Postura {
   tipoTerapias: string[];
   fotoUrl: string;
   videoUrl?: string;
-  instrucciones: string[]; 
+  descripcion: string[]; 
   beneficios: string[];    
   modificaciones?: string[];
 }

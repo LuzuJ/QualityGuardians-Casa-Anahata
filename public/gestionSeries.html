@@ -3,11 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Dashboard del Instructor</title>
+  <title>Gestión de Series</title>
   <link rel="stylesheet" href="/css/styleAnahata.css" />
 </head>
 <body class="dashboard">
-  <script type="module" src="/ts/dashboard.ts"></script>
+  <script type="module" src="/ts/gestionSeries.ts"></script>
+
   <div class="barra">
     <img src="/assets/img/logo.png" alt="Logo" class="logo" />
     <div class="marca">Casa Anahata</div>
@@ -15,24 +16,23 @@
   </div>
 
   <div class="panel">
-    
-     <div class="menu-lateral">
+    <div class="menu-lateral">
         <button class="btn-menu" onclick="location.href='dashboard.html'">Dashboard</button>
         <button class="btn-menu" onclick="location.href='gestionPacientes.html'">Gestionar pacientes</button>
-        <button class="btn-menu" onclick="location.href='gestionSeries.html'">Gestionar series</button>
-        <button class="btn-menu" onclick="location.href='crearSerie.html'">Crear serie terapéutica</button>
+        <button class="btn-menu" onclick="location.href='gestionSeries.html'">Gestionar series</button> <button class="btn-menu" onclick="location.href='crearSerie.html'">Crear serie</button>
         <button class="btn-menu" onclick="location.href='asignarSerie.html'">Asignar serie</button>
-      </div>
+    </div>
 
     <div class="contenido-panel">
       <div class="tarjeta">
-        <h2>Bienvenido, Instructor</h2>
-        <p>Desde este panel puedes gestionar pacientes, crear y asignar series terapéuticas, y hacer seguimiento a las sesiones completadas.</p>
-        <ul>
-          <li><strong>Pacientes registrados:</strong></li>
-          <li><strong>Series creadas:</strong></li>
-          <li><strong>Sesiones completadas esta semana:</strong></li>
-        </ul>
+        <h2>Gestión de Series Terapéuticas</h2>
+        <p>Aquí puedes ver y editar las series que has creado.</p>
+        
+        <button class="btn-primario" style="margin-bottom: 1.5rem;" onclick="location.href='crearSerie.html'">+ Crear Nueva Serie</button>
+
+        <h3>Series Existentes</h3>
+        <ul id="lista-series">
+          </ul>
       </div>
     </div>
   </div>

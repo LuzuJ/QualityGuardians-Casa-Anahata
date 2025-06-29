@@ -1,9 +1,19 @@
-import { fetchApi } from "./api";
-import { showToast } from "./utils";
+import { fetchApi, showToast } from "./api";
 import type { Postura } from "./types";
 
+/**
+ * Función mejorada para extraer el ID de un video de YouTube desde varios formatos de URL.
+ * @param url - La URL del video de YouTube.
+ * @returns El ID del video o null si no se encuentra.
+ */
+function getYouTubeVideoId(url: string): string | null {
+    if (!url) return null;
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
-    // Obtenemos el ID de la postura desde la URL
     const urlParams = new URLSearchParams(window.location.search);
     const posturaId = urlParams.get('posturaId');
 
@@ -13,40 +23,36 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     try {
-        // Hacemos la llamada a la API para obtener los detalles de la postura
         const postura = await fetchApi<Postura>(`/posturas/${posturaId}`);
 
-        // Usamos los IDs para actualizar el HTML con los datos correctos
         document.getElementById('postura-nombre')!.textContent = postura.nombre;
         document.getElementById('postura-sanskrito')!.textContent = postura.nombreSanskrito || 'No disponible';
         
-        // Unimos los arrays con saltos de línea para mejor visualización
-        document.getElementById('postura-beneficios')!.innerHTML = postura.beneficios.join('<br>');
-        document.getElementById('postura-instrucciones')!.innerHTML = postura.instrucciones.join('<br>');
+        // Aseguramos que los datos sean arrays antes de usar .join()
+        document.getElementById('postura-beneficios')!.innerHTML = Array.isArray(postura.beneficios) 
+            ? postura.beneficios.join('<br>') 
+            : postura.beneficios;
+            
+        document.getElementById('postura-instrucciones')!.innerHTML = Array.isArray(postura.descripcion)
+            ? postura.descripcion.join('<br>')
+            : postura.descripcion;
 
+        // --- LÓGICA DE VIDEO CORREGIDA Y MEJORADA ---
         const iframeElement = document.getElementById('youtube-video') as HTMLIFrameElement;
-        if (iframeElement && postura.videoUrl) {
-          let videoId = '';
-          try {
-            // Extraemos el ID del video del enlace corto (ej. https://youtu.be/VIDEO_ID)
-            const url = new URL(postura.videoUrl);
-            if (url.hostname === 'youtu.be') {
-              videoId = url.pathname.substring(1);
+        const videoContainer = iframeElement?.parentElement as HTMLElement;
+
+        if (iframeElement && videoContainer) {
+            const videoId = getYouTubeVideoId(postura.videoUrl);
+
+            if (videoId) {
+                // Usamos la URL de 'embed' correcta de YouTube
+                iframeElement.src = `https://www.youtube.com/embed/${videoId}`;
+                videoContainer.style.display = 'block'; // Mostramos el contenedor
+            } else {
+                // Si no hay videoId válido, ocultamos el contenedor del video
+                videoContainer.style.display = 'none';
+                console.warn("No se encontró un ID de video de YouTube válido en la URL:", postura.videoUrl);
             }
-          } catch (e) {
-            console.error("La URL del video no es válida:", postura.videoUrl);
-          }
-        
-          // Si logramos obtener un ID, construimos la URL para incrustar
-          if (videoId) {
-            iframeElement.src = `https://www.youtube.com/embed/${videoId}`;
-          } else {
-            // Si no hay un ID de video válido, ocultamos el contenedor del video
-            (iframeElement.parentElement as HTMLElement).style.display = 'none';
-          }
-        } else if (iframeElement) {
-          // Si la postura no tiene videoUrl, también ocultamos el contenedor
-          (iframeElement.parentElement as HTMLElement).style.display = 'none';
         }
 
     } catch (e) {

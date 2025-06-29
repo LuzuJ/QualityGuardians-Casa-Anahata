@@ -2,14 +2,14 @@
   "name": "yoga-clases-app",
   "version": "1.0.0",
   "description": "Software para gestión de clases de yoga terapéutico.",
-  "main": "dist/src/index.js",
+  "main": "dist/index.js",
   "scripts": {
     "dev": "concurrently \"npm:dev:backend\" \"npm:dev:frontend\"",
-    "dev:backend": "ts-node src/index.ts",
+    "dev:backend": "ts-node-dev --respawn src/index.ts",
     "dev:frontend": "vite",
     "build:backend": "tsc",
     "build:frontend": "vite build",
-    "start": "node dist/backend/index.js"
+    "start": "node dist/index.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.50.0",

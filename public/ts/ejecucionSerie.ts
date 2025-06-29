@@ -1,4 +1,6 @@
-import { fetchApi } from "./api";
+// public/ts/ejecucionSerie.ts
+
+import { fetchApi, showToast } from "./api"; // Importamos showToast
 import type { Serie } from "./types";
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -7,7 +9,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const imagenEl = document.getElementById('postura-imagen') as HTMLImageElement;
     const duracionEl = document.getElementById('postura-duracion');
     const timerDisplayEl = document.getElementById('timer-display');
-    
     const startPauseBtn = document.getElementById('start-pause-btn') as HTMLButtonElement;
     const resetBtn = document.getElementById('reset-btn') as HTMLButtonElement;
     const detallesBtn = document.getElementById('detalles-btn') as HTMLAnchorElement;
@@ -20,23 +21,30 @@ document.addEventListener('DOMContentLoaded', async () => {
     let serie: Serie;
     let posturaActualIndex = 0;
     
+    // V1 - Timer
     let timerInterval: number | null = null;
     let tiempoRestante = 0;
     let duracionOriginal = 0;
     let isPaused = true;
+    
+    // --- NUEVAS VARIABLES PARA VERSIÓN 2 ---
+    let pausasContador = 0;
+    let tiempoEfectivoTotalSegundos = 0;
+    let tiempoEfectivoInterval: number | null = null;
+    const horaInicioSesion = new Date(); // Guardamos la hora de inicio al cargar la página
 
-    // Leemos los parámetros de la URL para restaurar el estado si volvemos de "detalles"
+    // --- LÓGICA INICIAL Y VALIDACIÓN ---
     const urlParams = new URLSearchParams(window.location.search);
     const dolorInicio = urlParams.get('dolorInicio');
     const indexParam = urlParams.get('index');
-    const tiempoParam = urlParams.get('tiempo');
 
     if (!dolorInicio) {
-        alert('No se indicó el dolor inicial.');
-        return window.location.href = 'ejecutarSesion.html';
+        showToast('No se indicó el dolor inicial. Redirigiendo...', 'error'); // CORREGIDO: alert -> showToast
+        setTimeout(() => window.location.href = 'ejecutarSesion.html', 2000);
+        return;
     }
 
-    // --- LÓGICA DEL CRONÓMETRO ---
+    // --- LÓGICA DEL CRONÓMETRO (CON MEJORAS V2) ---
     const formatTime = (seconds: number): string => {
         const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
         const secs = (seconds % 60).toString().padStart(2, '0');
@@ -48,10 +56,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     const iniciarTimer = () => {
-        if (timerInterval) clearInterval(timerInterval); // Limpiar cualquier timer anterior
+        if (isPaused === false) return; // Evitar múltiples inicios
         isPaused = false;
         startPauseBtn.textContent = 'Pausar';
         
+        // Iniciar contador de tiempo restante de la postura
         timerInterval = window.setInterval(() => {
             tiempoRestante--;
             actualizarDisplay();
@@ -59,47 +68,56 @@ document.addEventListener('DOMContentLoaded', async () => {
                 siguientePostura();
             }
         }, 1000);
+
+        // Iniciar contador de tiempo efectivo total
+        tiempoEfectivoInterval = window.setInterval(() => {
+            tiempoEfectivoTotalSegundos++;
+        }, 1000);
     };
 
     const pausarTimer = () => {
-        if (timerInterval) clearInterval(timerInterval);
+        if (isPaused === true) return;
         isPaused = true;
         startPauseBtn.textContent = 'Continuar';
+        
+        pausasContador++; // AUMENTAMOS EL CONTADOR DE PAUSAS
+        
+        if (timerInterval) clearInterval(timerInterval);
+        if (tiempoEfectivoInterval) clearInterval(tiempoEfectivoInterval); // También pausamos el tiempo efectivo
     };
 
     const reiniciarTimer = () => {
         pausarTimer();
-        tiempoRestante = duracionOriginal;
-        isPaused = true;
         startPauseBtn.textContent = 'Iniciar';
+        tiempoRestante = duracionOriginal;
         actualizarDisplay();
     };
 
     const mostrarPostura = () => {
-        if (posturaActualIndex >= serie.secuencia.length) return finalizarSerie();
+        if (!serie || !serie.secuencia || posturaActualIndex >= serie.secuencia.length) {
+            return finalizarSerie();
+        }
         
         const postura = serie.secuencia[posturaActualIndex];
         
         tituloEl.textContent = `Postura ${posturaActualIndex + 1}: ${postura.nombre}`;
         imagenEl.src = postura.fotoUrl || '';
-        imagenEl.style.display = 'block';
+        imagenEl.style.display = 'initial';
         
         duracionOriginal = postura.duracionMinutos * 60;
         tiempoRestante = duracionOriginal;
 
         duracionEl.textContent = `Duración sugerida: ${postura.duracionMinutos} minuto(s)`;
-        
         detallesBtn.href = `visualizarPosturas.html?posturaId=${postura.id}&dolorInicio=${dolorInicio}&index=${posturaActualIndex}`;
         
-        reiniciarTimer(); // Reinicia el cronómetro para la nueva postura
+        reiniciarTimer();
 
-        // --- LÓGICA PARA HABILITAR/DESHABILITAR BOTONES ---
         anteriorBtn.disabled = posturaActualIndex === 0;
         siguienteBtn.textContent = (posturaActualIndex === serie.secuencia.length - 1) ? 'Finalizar Sesión' : 'Siguiente Postura';
     };
     
     const siguientePostura = () => {
-        if (posturaActualIndex >= serie.secuencia.length - 1) {
+        if (!serie.secuencia || posturaActualIndex >= serie.secuencia.length - 1) {
             finalizarSerie();
             return;
         }
@@ -107,36 +125,51 @@ document.addEventListener('DOMContentLoaded', async () => {
         mostrarPostura();
     };
     
-    // --- NUEVA FUNCIÓN PARA LA POSTURA ANTERIOR ---
     const posturaAnterior = () => {
-        if (posturaActualIndex <= 0) return; // No hacer nada si es la primera
+        if (posturaActualIndex <= 0) return;
         posturaActualIndex--;
         mostrarPostura();
     };
     
     const finalizarSerie = () => {
-        if (timerInterval) clearInterval(timerInterval);
-        window.location.href = `registroSesion.html?dolorInicio=${dolorInicio}`;
+        pausarTimer(); // Detiene todos los contadores
+        const horaFinSesion = new Date();
+        const tiempoEfectivoMinutos = Math.round(tiempoEfectivoTotalSegundos / 60);
+
+        // --- ENVIAMOS TODOS LOS DATOS V2 A LA SIGUIENTE PÁGINA ---
+        const params = new URLSearchParams({
+            dolorInicio: dolorInicio,
+            horaInicio: horaInicioSesion.toISOString(),
+            horaFin: horaFinSesion.toISOString(),
+            tiempoEfectivoMinutos: String(tiempoEfectivoMinutos),
+            pausas: String(pausasContador)
+        });
+        
+        window.location.href = `registroSesion.html?${params.toString()}`;
     };
 
-    // --- ASIGNACIÓN DE EVENTOS (AÑADIMOS EL NUEVO BOTÓN) ---
+    // --- ASIGNACIÓN DE EVENTOS ---
     startPauseBtn.addEventListener('click', () => {
         isPaused ? iniciarTimer() : pausarTimer();
     });
     
     resetBtn.addEventListener('click', reiniciarTimer);
     siguienteBtn.addEventListener('click', (e) => { e.preventDefault(); siguientePostura(); });
-    anteriorBtn.addEventListener('click', (e) => { e.preventDefault(); posturaAnterior(); }); // <-- NUEVO EVENTO
+    anteriorBtn.addEventListener('click', (e) => { e.preventDefault(); posturaAnterior(); });
 
     // --- INICIO DE LA CARGA DE DATOS ---
     try {
         serie = await fetchApi<Serie>('/pacientes/mi-serie');
-        if (!serie?.secuencia?.length) throw new Error('No tienes una serie asignada.');
+        if (!serie?.secuencia?.length) {
+            throw new Error('No tienes una serie asignada o está vacía.');
+        }
         
         posturaActualIndex = indexParam ? parseInt(indexParam, 10) : 0;
-        
         mostrarPostura();
     } catch (e) {
-        if (e instanceof Error) alert(e.message);
+        if (e instanceof Error) {
+            showToast(e.message, 'error'); // CORREGIDO: alert -> showToast
+            setTimeout(() => window.location.href = 'detalleSesion.html', 2000); // Redirigir al historial si hay error
+        }
     }
 });

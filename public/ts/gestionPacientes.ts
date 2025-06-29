@@ -7,14 +7,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     const formTitle = addPatientForm?.querySelector<HTMLHeadingElement>('h3');
     const submitButton = addPatientForm?.querySelector<HTMLButtonElement>('button[type="submit"]');
 
-    // REFACTOR: Obtenemos referencia a los inputs una sola vez
     const cedulaInput = addPatientForm?.querySelector<HTMLInputElement>('input[name="cedula"]');
     const nombreInput = addPatientForm?.querySelector<HTMLInputElement>('input[name="nombre"]');
     const correoInput = addPatientForm?.querySelector<HTMLInputElement>('input[type="email"]');
     const telefonoInput = addPatientForm?.querySelector<HTMLInputElement>('input[type="tel"]');
     const fechaInput = addPatientForm?.querySelector<HTMLInputElement>('input[type="date"]');
 
-    if (!addPatientForm || !patientListUl || !formTitle || !submitButton || !nombreInput || !correoInput || !telefonoInput || !fechaInput) return;
+    if (!addPatientForm || !patientListUl || !formTitle || !submitButton || !cedulaInput || !nombreInput || !correoInput || !telefonoInput || !fechaInput) return;
 
     let modoEdicion = false;
     let pacienteIdEditando: string | null = null;
@@ -25,12 +24,27 @@ document.addEventListener('DOMContentLoaded', async () => {
             patientListUl.innerHTML = '';
             pacientes.forEach(paciente => {
                 const li = document.createElement('li');
-                li.textContent = `${paciente.nombre} `;
+                li.textContent = `${paciente.nombre} (${paciente.correo}) `;
+                li.style.marginBottom = '10px';
+
+                // Botón para editar la información del paciente
                 const editButton = document.createElement('button');
-                editButton.className = 'btn-primario';
+                editButton.className = 'btn-secundario';
                 editButton.textContent = 'Editar';
                 editButton.onclick = () => iniciarEdicion(paciente);
                 li.appendChild(editButton);
+
+                // --- BOTÓN PARA VER EL PROGRESO (HISTORIAL) ---
+                const progressButton = document.createElement('button');
+                progressButton.className = 'btn-primario';
+                progressButton.textContent = 'Ver Progreso';
+                progressButton.style.marginLeft = '10px';
+                progressButton.onclick = () => {
+                    window.location.href = `vistaPacienteInstructor.html?pacienteId=${paciente.cedula}`;
+                };
+                li.appendChild(progressButton);
+                // --- FIN DEL BOTÓN DE PROGRESO ---
+
                 patientListUl.appendChild(li);
             });
         } catch (error) {
@@ -39,42 +53,40 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     const iniciarEdicion = (paciente: Paciente) => {
-    modoEdicion = true;
-    pacienteIdEditando = paciente.cedula;
+        modoEdicion = true;
+        pacienteIdEditando = paciente.cedula;
 
-    if (cedulaInput) {
         cedulaInput.value = paciente.cedula;
-        cedulaInput.readOnly = true; // Hacer que el campo no se pueda editar
-    }
-    if (nombreInput) nombreInput.value = paciente.nombre;
-    if (correoInput) correoInput.value = paciente.correo;
-    if (telefonoInput) telefonoInput.value = paciente.telefono || '';
-    if (fechaInput) fechaInput.value = paciente.fechaNacimiento;
+        cedulaInput.readOnly = true;
+        nombreInput.value = paciente.nombre;
+        correoInput.value = paciente.correo;
+        telefonoInput.value = paciente.telefono || '';
+        if (paciente.fechaNacimiento) {
+            fechaInput.value = paciente.fechaNacimiento.split('T')[0]; // Formato YYYY-MM-DD
+        }
 
-    formTitle.textContent = 'Editar Paciente';
-    submitButton.textContent = 'Guardar Cambios';
-    window.scrollTo(0, 0);
-};
+        formTitle.textContent = 'Editar Paciente';
+        submitButton.textContent = 'Guardar Cambios';
+        window.scrollTo(0, 0);
+    };
     
-    // BUG FIX: Implementamos la lógica de la función
     const resetearFormulario = () => {
         modoEdicion = false;
         pacienteIdEditando = null;
         addPatientForm.reset();
         formTitle.textContent = 'Agregar nuevo paciente';
         submitButton.textContent = 'Agregar paciente';
-
-        if (cedulaInput) cedulaInput.readOnly = false;
+        cedulaInput.readOnly = false;
     };
 
     addPatientForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const data = {
-            cedula: (addPatientForm.querySelector('input[name="cedula"]') as HTMLInputElement).value,
-            nombre: (addPatientForm.querySelector('input[name="nombre"]') as HTMLInputElement).value,
-            correo: (addPatientForm.querySelector('input[name="correo"]') as HTMLInputElement).value,
-            telefono: (addPatientForm.querySelector('input[name="telefono"]') as HTMLInputElement).value,
-            fechaNacimiento: (addPatientForm.querySelector('input[name="fechaNacimiento"]') as HTMLInputElement).value
+            cedula: cedulaInput.value,
+            nombre: nombreInput.value,
+            correo: correoInput.value,
+            telefono: telefonoInput.value,
+            fechaNacimiento: fechaInput.value
         };
         try {
             if (modoEdicion && pacienteIdEditando) {

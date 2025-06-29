@@ -40,3 +40,39 @@ export async function obtenerTodasLasSeries(): Promise<Serie[]> {
 
   return data || [];
 }
+
+export async function actualizarSerie(id: string, data: Partial<Omit<Serie, 'id' | 'instructorId'>>): Promise<Serie> {
+    const { data: serieActualizada, error } = await supabase
+      .from('Series')
+      .update(data)
+      .eq('id', id)
+      .select()
+      .single();
+  
+    if (error) {
+      console.error("Error al actualizar la serie:", error);
+      throw new Error("No se pudo actualizar la serie o no fue encontrada.");
+    }
+  
+    return serieActualizada;
+}
+
+export async function obtenerSeriePorId(id: string): Promise<Serie> {
+  const { data, error } = await supabase.from('Series').select('*').eq('id', id).single();
+  if (error) throw new Error('Serie no encontrada.');
+  return data;
+}
+
+export async function obtenerSeriesPorInstructor(instructorId: string): Promise<Serie[]> {
+  const { data, error } = await supabase
+    .from('Series')
+    .select('*')
+    .eq('instructorId', instructorId); // <-- LA LÍNEA CLAVE DEL FILTRADO
+
+  if (error) {
+    console.error("Error al obtener las series por instructor:", error);
+    throw new Error("No se pudieron obtener las series.");
+  }
+
+  return data || [];
+}

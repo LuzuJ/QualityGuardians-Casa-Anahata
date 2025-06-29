@@ -327,3 +327,20 @@ body, html {
   justify-content: center;
   align-items: center;
 }
+
+.contenedor-imagen-postura {
+  width: 100%;
+  max-width: 500px; /* Ancho máximo para la imagen */
+  height: 350px;    /* Altura fija para todas las imágenes */
+  margin: 1rem auto; /* Centra el contenedor */
+  border-radius: 8px;
+  overflow: hidden; /* Oculta las partes de la imagen que se salgan */
+  background-color: #f0f0f0; /* Fondo mientras carga o por si falla */
+}
+
+.imagen-postura {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* La propiedad clave: escala la imagen para cubrir el espacio sin deformarla */
+  object-position: center; /* Centra la imagen */
+}

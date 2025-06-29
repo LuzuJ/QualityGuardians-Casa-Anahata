@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Crear Serie Terapéutica</title>
+  <title>Editar Serie Terapéutica</title>
   <link rel="stylesheet" href="/css/styleAnahata.css" />
 </head>
 <body class="dashboard">
-  <script type="module" src="/ts/crearSerie.ts"></script>
+  <script type="module" src="/ts/editarSerie.ts"></script>
   
   <div class="barra">
     <img src="/assets/img/logo.png" alt="Logo" class="logo" />
@@ -26,13 +26,12 @@
 
     <div class="contenido-panel">
       <div class="tarjeta">
-        <h2>Crear nueva serie terapéutica</h2>
+        <h2>Editar Serie Terapéutica</h2>
         
         <form class="formulario">
-
           <div class="campo-formulario">
             <label for="nombreSerie">Nombre de la serie</label>
-            <input type="text" id="nombreSerie" name="nombreSerie" placeholder="Ej. Serie matutina para la espalda" required />
+            <input type="text" id="nombreSerie" name="nombreSerie" required />
           </div>
 
           <div class="campo-formulario">
@@ -47,7 +46,7 @@
 
           <fieldset style="margin-top: 2rem; border-top: 1px solid #eee; padding-top: 1.5rem;">
             <legend>Secuencia de Posturas</legend>
-            <div id="selector-posturas-visual" style="display: none; flex-wrap: wrap; gap: 20px;">
+            <div id="selector-posturas-visual" style="display: flex; flex-wrap: wrap; gap: 20px;">
               <div style="flex: 1; min-width: 300px;">
                 <h4>Posturas Disponibles</h4>
                 <div id="lista-posturas-disponibles" style="height: 300px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; border-radius: 6px;">
@@ -79,8 +78,7 @@
             <input type="number" id="numSesiones" name="numSesiones" min="1" max="100" required />
           </div>
 
-          <button type="submit" class="btn-primario">Guardar Serie</button>
-          
+          <button type="submit" class="btn-primario">Guardar Cambios</button>
         </form>
       </div>
     </div>

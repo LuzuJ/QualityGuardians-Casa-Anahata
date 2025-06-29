@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vista del Paciente</title>
+    <link rel="stylesheet" href="/css/styleAnahata.css" />
+</head>
+<body class="dashboard">
+    <script type="module" src="/ts/vistaPacienteInstructor.ts"></script>
+    
+    <div class="barra">
+      <img src="/assets/img/logo.png" alt="Logo" class="logo" />
+      <div class="marca">Casa Anahata</div>
+      <button class="btn-cerrar-sesion" onclick="location.href='inicioSesion.html'">Cerrar sesión</button>
+    </div>
+
+    <div class="panel">
+        <div class="menu-lateral">
+            <button class="btn-menu" onclick="location.href='dashboard.html'">Dashboard</button>
+            <button class="btn-menu" onclick="location.href='gestionPacientes.html'">Gestionar pacientes</button>
+            <button class="btn-menu" onclick="location.href='gestionSeries.html'">Gestionar series</button>
+            <button class="btn-menu" onclick="location.href='crearSerie.html'">Crear serie</button>
+            <button class="btn-menu" onclick="location.href='asignarSerie.html'">Asignar serie</button>
+        </div>
+
+        <div class="contenido-panel">
+            <div class="tarjeta">
+                <a href="gestionPacientes.html" class="btn-secundario" style="float: right;">&larr; Volver a la lista</a>
+                <h2 id="nombre-paciente">Cargando...</h2>
+                
+                <div id="info-paciente">
+                    </div>
+
+                <hr style="margin: 2rem 0;">
+
+                <h3>Historial de Sesiones</h3>
+                <ul id="lista-historial">
+                    </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

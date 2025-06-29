@@ -1,44 +1,46 @@
+// src/services/statsService.ts
+
 import { supabase } from '../config/supabaseClient';
 
 export async function obtenerEstadisticasInstructor(instructorId: string) {
+  // 1. Contar pacientes (esto funciona bien)
   const { count: pacientesRegistrados, error: errorPacientes } = await supabase
     .from('Paciente')
     .select('cedula', { count: 'exact', head: true }) 
     .eq('instructorId', instructorId);
 
-  if (errorPacientes) throw new Error("Error al contar pacientes.");
+  if (errorPacientes) {
+      console.error("Error al contar pacientes:", errorPacientes);
+      throw new Error("Error de base de datos al contar pacientes.");
+  }
 
+  // 2. Contar series (esto funciona bien)
   const { count: seriesCreadas, error: errorSeries } = await supabase
     .from('Series')
     .select('id', { count: 'exact', head: true })
     .eq('instructorId', instructorId);
 
-  if (errorSeries) throw new Error("Error al contar series.");
-
-  const { data: pacientes, error: errorHistorial } = await supabase
-    .from('Paciente')
-    .select('historialSesiones')
-    .eq('instructorId', instructorId);
-
-  if (errorHistorial) throw new Error("Error al obtener historial de pacientes.");
-
-  const sieteDiasAtras = new Date();
-  sieteDiasAtras.setDate(sieteDiasAtras.getDate() - 7);
-  let sesionesCompletadasSemana = 0;
-
-  for (const paciente of pacientes) {
-    if (paciente.historialSesiones) {
-      for (const sesion of paciente.historialSesiones) {
-        if (new Date(sesion.fecha) >= sieteDiasAtras) {
-          sesionesCompletadasSemana++;
-        }
-      }
-    }
+  if (errorSeries) {
+    console.error("Error al contar series:", errorSeries);
+    throw new Error("Error de base de datos al contar series.");
   }
 
+  // --- LÓGICA CORREGIDA USANDO LA FUNCIÓN DE LA BASE DE DATOS (RPC) ---
+  // 3. Llamar a nuestra función para contar las sesiones de la última semana
+  const { data: sesionesCompletadasSemana, error: errorRpc } = await supabase
+    .rpc('contar_sesiones_recientes_por_instructor', {
+      id_instructor_param: instructorId
+    });
+  
+  if (errorRpc) {
+    console.error("Error al llamar a la función RPC para contar sesiones:", errorRpc);
+    throw new Error("Error de base de datos al contar las sesiones.");
+  }
+
+  // 4. Devolver el resultado final
   return {
     pacientesRegistrados: pacientesRegistrados ?? 0,
     seriesCreadas: seriesCreadas ?? 0,
-    sesionesCompletadasSemana
+    sesionesCompletadasSemana: sesionesCompletadasSemana ?? 0,
   };
 }

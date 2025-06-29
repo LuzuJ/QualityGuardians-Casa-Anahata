@@ -2,17 +2,32 @@ import { supabase } from '../config/supabaseClient';
 import { Instructor } from '../models/instructor';
 import bcrypt from 'bcrypt';
 
+const validarContraseña = (contraseña: string) => {
+  const minLength = 8;
+  const hasUpperCase = /[A-Z]/.test(contraseña);
+  const hasLowerCase = /[a-z]/.test(contraseña);
+  const hasNumbers = /\d/.test(contraseña);
+  const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(contraseña);
+
+  if (contraseña.length < minLength) throw new Error(`La contraseña debe tener al menos ${minLength} caracteres.`);
+  if (!hasUpperCase) throw new Error("La contraseña debe contener al menos una letra mayúscula.");
+  if (!hasLowerCase) throw new Error("La contraseña debe contener al menos una letra minúscula.");
+  if (!hasNumbers) throw new Error("La contraseña debe contener al menos un número.");
+  if (!hasSpecialChar) throw new Error("La contraseña debe contener al menos un carácter especial.");
+};
 
 export async function registrarInstructor(
   nombre: string,
   correo: string,
   contraseña: string
 ): Promise<Omit<Instructor, 'contraseña'>> {
+  validarContraseña(contraseña);
+  
   const { data: existente } = await supabase
-    .from('Instructor') // Usa el nombre EXACTO de tu tabla en Supabase
+    .from('Instructor') 
     .select('id')
-    .eq('correo', correo) // eq() es como un 'WHERE correo = ...'
-    .single(); // .single() espera un solo resultado o ninguno
+    .eq('correo', correo) 
+    .single(); 
 
   if (existente) {
     throw new Error('El correo ya está registrado');
@@ -28,7 +43,7 @@ export async function registrarInstructor(
   const { data, error } = await supabase
     .from('Instructor')
     .insert(nuevoInstructor)
-    .select('id, nombre, correo') // Selecciona solo los campos seguros para devolver
+    .select('id, nombre, correo') 
     .single();
 
   if (error) {

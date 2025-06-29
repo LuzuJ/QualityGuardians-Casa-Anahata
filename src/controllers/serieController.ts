@@ -1,5 +1,6 @@
 import { Request, RequestHandler, Response } from 'express';
-import { crearSerie, obtenerTodasLasSeries } from '../services/serieService';
+import { crearSerie, actualizarSerie, 
+  obtenerSeriePorId, obtenerSeriesPorInstructor } from '../services/serieService';
 
 export const crearSerieHandler = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -27,9 +28,41 @@ export const crearSerieHandler = async (req: Request, res: Response): Promise<vo
 
 export const listarSeriesHandler: RequestHandler = async (req, res) => {
   try {
-    const todasLasSeries = await obtenerTodasLasSeries();
-    res.status(200).json(todasLasSeries);
+    // 1. Obtenemos el ID del instructor autenticado desde el token
+    const instructorId = req.user?.id;
+    if (!instructorId) {
+      return res.status(401).json({ error: 'Instructor no autenticado' });
+    }
+
+    // 2. Llamamos al servicio pasándole el ID para filtrar
+    const seriesDelInstructor = await obtenerSeriesPorInstructor(instructorId);
+    res.status(200).json(seriesDelInstructor);
+    
   } catch (error: any) {
-    res.status(500).json({ message: "Error al obtener las series", error: error.message });
+    res.status(500).json({ error: "Error al obtener las series: " + error.message });
   }
+};
+
+export const actualizarSerieHandler: RequestHandler = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const instructorId = req.user?.id;
+        
+        // Opcional: Verificar que la serie pertenezca al instructor que la edita.
+        // (Esto requeriría una consulta previa)
+
+        const serieActualizada = await actualizarSerie(id, { ...req.body, instructorId });
+        res.status(200).json({ mensaje: 'Serie actualizada correctamente', serie: serieActualizada });
+    } catch (error: any) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
+export const obtenerSerieHandler: RequestHandler = async (req, res) => {
+    try {
+        const serie = await obtenerSeriePorId(req.params.id);
+        res.status(200).json(serie);
+    } catch (error: any) {
+        res.status(404).json({ error: error.message });
+    }
 };

@@ -3,40 +3,55 @@ import { supabase } from '../config/supabaseClient';
 import { Paciente } from '../models/paciente';
 import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
-import { HistorialSesion } from '../models/historialSesion';
+import { Sesion } from '../models/Sesion';
+
+const validarContraseña = (contraseña: string) => {
+    const minLength = 8;
+    const hasUpperCase = /[A-Z]/.test(contraseña);
+    const hasLowerCase = /[a-z]/.test(contraseña);
+    const hasNumbers = /\d/.test(contraseña);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(contraseña);
+  
+    if (contraseña.length < minLength) throw new Error(`La contraseña debe tener al menos ${minLength} caracteres.`);
+    if (!hasUpperCase) throw new Error("La contraseña debe contener al menos una letra mayúscula.");
+    if (!hasLowerCase) throw new Error("La contraseña debe contener al menos una letra minúscula.");
+    if (!hasNumbers) throw new Error("La contraseña debe contener al menos un número.");
+    if (!hasSpecialChar) throw new Error("La contraseña debe contener al menos un carácter especial.");
+};
 
 type RegistrarPacienteData = Omit<Paciente, 'contrasena' | 'estado' | 'serieAsignada' | 'historialSesiones'>;
 
-export async function registrarPaciente(datos: RegistrarPacienteData) {
-  // 1. Verificar si el correo ya existe
+export async function registrarPaciente(datosPaciente: Omit<Paciente, 'contrasena' | 'estado' | 'serieAsignada' | 'instructorId'>, instructorId: string) {
+  
+  // 1. Verificar si el correo o la cédula ya existen (lógica existente)
   const { data: existentePorCorreo } = await supabase
     .from('Paciente')
     .select('cedula')
-    .eq('correo', datos.correo)
+    .eq('correo', datosPaciente.correo)
     .single();
 
   if (existentePorCorreo) {
     throw new Error('El correo ya está registrado');
   }
 
-  // 2. Verificar si la cédula ya existe
   const { data: existentePorCedula } = await supabase
     .from('Paciente')
     .select('cedula')
-    .eq('cedula', datos.cedula)
+    .eq('cedula', datosPaciente.cedula)
     .single();
 
   if (existentePorCedula) {
     throw new Error('La cédula ya está registrada');
   }
 
-  // 3. Preparar y registrar el nuevo paciente
+  // 2. Preparar el nuevo objeto del paciente
   const nuevoPaciente = {
-    ...datos,
-    estado: 'pendiente',
-    historialSesiones: [],
+    ...datosPaciente,
+    instructorId: instructorId, // <-- Aquí se asigna el ID del instructor
+    estado: 'pendiente' as const,
   };
 
+  // 3. Insertar en la base de datos
   const { data, error } = await supabase
     .from('Paciente')
     .insert(nuevoPaciente)
@@ -44,7 +59,6 @@ export async function registrarPaciente(datos: RegistrarPacienteData) {
     .single();
 
   if (error) {
-    // Es buena práctica mantener un log en el backend para errores críticos de base de datos.
     console.error('Error de Supabase al insertar paciente:', error); 
     throw new Error('Error al registrar al paciente.');
   }
@@ -59,12 +73,32 @@ export async function actualizarPaciente(cedula: string, datos: Partial<Omit<Pac
 }
 
 export async function obtenerPacientesPorInstructor(instructorId: string): Promise<Paciente[]> {
-  const { data, error } = await supabase.from('Paciente').select('*').eq('instructorId', instructorId);
-  if (error) throw new Error('Error al obtener pacientes.');
-  return data || [];
+  
+  // En lugar de select('*'), especificamos las columnas que necesitamos.
+  // Esto evita problemas si una columna no utilizada (como serieAsignada) tiene datos corruptos.
+  const { data, error } = await supabase
+    .from('Paciente')
+    .select('cedula, nombre, correo, fechaNacimiento, telefono, observaciones, genero') // <-- CONSULTA ESPECÍFICA
+    .eq('instructorId', instructorId);
+
+  if (error) {
+    console.error("Error al obtener la lista de pacientes:", error);
+    throw new Error('Error de base de datos al obtener los pacientes.');
+  }
+
+  return (data || []).map((p: any) => ({
+    ...p,
+    estado: p.estado ?? 'pendiente',
+    instructorId: p.instructorId ?? instructorId,
+    serieAsignada: p.serieAsignada ?? null,
+    historialSesiones: p.historialSesiones ?? [],
+    contrasena: p.contrasena ?? '',
+  })) as Paciente[];
 }
 
 export async function establecerPasswordPaciente(correo: string, nuevaContraseña: string) {
+  validarContraseña(nuevaContraseña);
+
   const { data: paciente, error: findError } = await supabase.from('Paciente').select('*').eq('correo', correo).single();
   if (findError || !paciente) throw new Error("No se encontró un paciente con ese correo electrónico.");
   if (paciente.estado !== 'pendiente') throw new Error("Esta cuenta ya ha sido activada.");
@@ -145,36 +179,77 @@ export async function obtenerSerieAsignada(pacienteCedula: string) {
   return serieParaFrontend;
 }
 
-export async function registrarSesionCompletada(pacienteId: string, datosSesion: { dolorInicio: number, dolorFin: number, comentario: string }) {
-  const { data: paciente, error: findError } = await supabase.from('Paciente').select('cedula, serieAsignada, historialSesiones').eq('cedula', pacienteId).single();
-  if (findError || !paciente) throw new Error('Paciente no encontrado');
-  if (!paciente.serieAsignada) throw new Error('No se puede registrar una sesión sin una serie asignada.');
+export async function registrarSesionCompletada(pacienteId: string, datosSesion: Omit<Sesion, 'id' | 'pacienteId' | 'serieId' | 'fecha'>) {
+    const { data: paciente, error: findError } = await supabase
+      .from('Paciente')
+      .select('cedula, serieAsignada')
+      .eq('cedula', pacienteId)
+      .single();
 
-  const nuevaSesion: HistorialSesion = {
-    id: uuidv4(),
-    pacienteId: paciente.cedula,
-    serieId: paciente.serieAsignada.idSerie,
-    fecha: new Date().toISOString(),
-    ...datosSesion
-  };
+    if (findError || !paciente) throw new Error('Paciente no encontrado');
+    if (!paciente.serieAsignada?.idSerie) throw new Error('No se puede registrar una sesión sin una serie asignada.');
 
-  const historialActualizado = [...(paciente.historialSesiones || []), nuevaSesion];
-  const serieActualizada = {
-    ...paciente.serieAsignada,
-    sesionesCompletadas: paciente.serieAsignada.sesionesCompletadas + 1
-  };
+    const nuevaSesionParaInsertar = {
+      id: uuidv4(),
+      pacienteId: paciente.cedula,
+      serieId: paciente.serieAsignada.idSerie,
+      fecha: new Date().toISOString(),
+      ...datosSesion
+    };
 
-  const { error: updateError } = await supabase.from('Paciente').update({
-    historialSesiones: historialActualizado,
-    serieAsignada: serieActualizada
-  }).eq('cedula', pacienteId);
+    const { error: insertError } = await supabase
+        .from('Sesiones')
+        .insert(nuevaSesionParaInsertar);
 
-  if (updateError) throw new Error('Error al registrar la sesión.');
-  return { message: 'Sesión registrada con éxito' };
+    if (insertError) {
+        console.error("Error al registrar la sesión:", insertError);
+        throw new Error('Error al guardar el registro de la sesión.');
+    }
+
+    const serieActualizada = {
+      ...paciente.serieAsignada,
+      sesionesCompletadas: (paciente.serieAsignada.sesionesCompletadas || 0) + 1
+    };
+  
+    await supabase.from('Paciente').update({
+      serieAsignada: serieActualizada
+    }).eq('cedula', pacienteId);
+  
+    return { message: 'Sesión registrada con éxito' };
 }
 
-export async function obtenerHistorialDePaciente(pacienteCedula: string) { 
-  const { data, error } = await supabase.from('Paciente').select('historialSesiones').eq('cedula', pacienteCedula).single();
-  if (error || !data) throw new Error('Paciente no encontrado.');
-  return data.historialSesiones || [];
+export async function obtenerHistorialDePaciente(pacienteCedula: string): Promise<Sesion[]> { 
+    const { data, error } = await supabase
+        .from('Sesiones')
+        .select('*')
+        .eq('pacienteId', pacienteCedula)
+        .order('fecha', { ascending: false });
+
+    if (error) {
+        console.error("Error al obtener historial:", error);
+        throw new Error('No se pudo obtener el historial del paciente.');
+    }
+
+    return data || [];
+}
+
+export async function obtenerPacientePorCedula(cedula: string): Promise<Paciente> {
+  const { data, error } = await supabase
+    .from('Paciente')
+    .select('cedula, nombre, correo, fechaNacimiento, telefono, genero, observaciones, serieAsignada, estado, instructorId, contrasena, historialSesiones')
+    .eq('cedula', cedula)
+    .single();
+
+  if (error) {
+    console.error("Error al obtener paciente por cédula:", error);
+    throw new Error('Paciente no encontrado.');
+  }
+  // Aseguramos que los campos requeridos por el tipo Paciente estén presentes
+  return {
+    ...data,
+    estado: data.estado ?? 'pendiente',
+    instructorId: data.instructorId ?? '',
+    contrasena: data.contrasena ?? '',
+    historialSesiones: data.historialSesiones ?? [],
+  } as Paciente;
 }

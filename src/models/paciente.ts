@@ -1,5 +1,3 @@
-import { HistorialSesion } from "./historialSesion";
-
 export interface Paciente {
   cedula: string;
   nombre: string;
@@ -18,5 +16,4 @@ export interface Paciente {
     sesionesRecomendadas: number;
     sesionesCompletadas: number;
   };
-  historialSesiones: HistorialSesion[];
 }
