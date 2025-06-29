@@ -6,12 +6,19 @@ import { showToast } from "./utils";
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.querySelector<HTMLFormElement>('.formulario');
     
+    // --- LEEMOS TODOS LOS PARÁMETROS DE LA URL ---
     const urlParams = new URLSearchParams(window.location.search);
     const dolorInicio = urlParams.get('dolorInicio');
     const horaInicio = urlParams.get('horaInicio');
     const horaFin = urlParams.get('horaFin');
     const tiempoEfectivoMinutos = urlParams.get('tiempoEfectivoMinutos');
     const pausas = urlParams.get('pausas');
+
+    // Verificación inicial para asegurar que los datos esenciales llegaron
+    if (!dolorInicio || !horaInicio || !horaFin) {
+        showToast('Faltan datos de la sesión anterior. No se puede registrar la evaluación.', 'error');
+        return;
+    }
 
     form?.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -22,16 +29,15 @@ document.addEventListener('DOMContentLoaded', () => {
             return showToast('Por favor, completa todos los campos.', 'error');
         }
 
-        // --- OBJETO DE DATOS CORREGIDO ---
-        // Ahora las claves coinciden con las que espera tu backend (snake_case)
+        // --- CONSTRUIMOS EL OBJETO CON TODOS LOS DATOS V2 ---
         const datosDeSesion = {
-            dolorInicial: dolorInicio ? parseInt(dolorInicio, 10) : null,
+            dolorInicial: parseInt(dolorInicio, 10),
             dolorFinal: parseInt(dolorFinal, 10),
             comentario: comentario,
-            hora_inicio: horaInicio || null, // Corregido
-            hora_fin: horaFin || null, // Corregido
-            tiempo_efectivo_minutos: tiempoEfectivoMinutos ? parseInt(tiempoEfectivoMinutos, 10) : null, // Corregido
-            pausas: pausas ? parseInt(pausas, 10) : null
+            hora_inicio: new Date(horaInicio).toTimeString().split(' ')[0], // Formato HH:MM:SS
+            hora_fin: new Date(horaFin).toTimeString().split(' ')[0], // Formato HH:MM:SS
+            tiempo_efectivo_minutos: tiempoEfectivoMinutos ? parseInt(tiempoEfectivoMinutos, 10) : 0,
+            pausas: pausas ? parseInt(pausas, 10) : 0
         };
 
         try {
@@ -40,12 +46,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify(datosDeSesion)
             });
             
-            showToast('Sesión registrada correctamente. ¡Bien hecho!', 'success');
+            showToast('Evaluación guardada con éxito. ¡Bien hecho!', 'success');
             setTimeout(() => window.location.href = 'detalleSesion.html', 2000);
         
         } catch (e) { 
             if (e instanceof Error) {
-                showToast(`Error al registrar la sesión: ${e.message}`, 'error');
+                showToast(`Error al guardar la evaluación: ${e.message}`, 'error');
             }
         }
     });

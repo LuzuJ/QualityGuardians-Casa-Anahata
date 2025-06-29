@@ -2,7 +2,8 @@ import express from 'express';
 import { 
     crearPacienteHandler, listarPacientesHandler, actualizarPacienteHandler,
     establecerPasswordPacienteHandler, asignarSerieHandler, obtenerMiSerieHandler, 
-    obtenerHistorialHandler, obtenerMiHistorialHandler, obtenerPacienteHandler 
+    obtenerHistorialHandler, obtenerMiHistorialHandler, obtenerPacienteHandler,
+    obtenerMiPerfilHandler
 } from '../controllers/pacienteController';
 import { verificarToken } from '../middlewares/middleware';
 
@@ -20,6 +21,7 @@ router.post('/establecer-password', establecerPasswordPacienteHandler);
 
 // --- Rutas de Paciente autenticado (requieren token) ---
 router.get('/mi-serie', verificarToken, obtenerMiSerieHandler);
+router.get('/mi-perfil', verificarToken, obtenerMiPerfilHandler); 
 router.get('/mi-historial', verificarToken, obtenerMiHistorialHandler);
 router.get('/:cedula', verificarToken, obtenerPacienteHandler);
 

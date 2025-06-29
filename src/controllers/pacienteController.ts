@@ -114,3 +114,14 @@ export const obtenerPacienteHandler: RequestHandler = async (req, res) => {
         res.status(404).json({ error: error.message });
     }
 };
+
+export const obtenerMiPerfilHandler: RequestHandler = async (req, res) => {
+    const pacienteId = req.user?.id;
+    if (!pacienteId) return res.status(401).json({ error: 'Token inválido' });
+    try {
+        const perfil = await obtenerPacientePorCedula(pacienteId);
+        res.status(200).json(perfil);
+    } catch (error: any) {
+        res.status(404).json({ error: error.message });
+    }
+};

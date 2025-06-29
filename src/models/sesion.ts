@@ -4,7 +4,7 @@ export interface Sesion {
   dolorFinal: number;
   comentario: string;
   pacienteId: string;
-  serieId: string;
+  seriesId: string;
   fecha: string;
   hora_inicio?: string;
   hora_fin?: string;
