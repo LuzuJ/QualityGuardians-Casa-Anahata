@@ -8,5 +8,5 @@
 # Regla "Catch-All" para que la navegación en el frontend funcione correctamente
 [[redirects]]
   from = "/*"
-  to = "/index.html"
+  to = "/"
   status = 200
