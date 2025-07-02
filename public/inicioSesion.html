@@ -13,7 +13,11 @@
     <div class="contenedor-formulario">
       <form class="formulario" method="POST">
         <input type="email" name="correo" placeholder="Correo electrónico" required>
-        <input type="password" name="password" placeholder="Contraseña" required>
+
+        <div class="campo-password-contenedor">
+          <input type="password" name="password" placeholder="Contraseña" required>
+          <span class="toggle-password">👁️</span>
+        </div>
 
         <div class="grupo-botones-rol">
           <button type="submit" formaction="ejecutarSesion.html" class="btn-primario">Entrar como Paciente</button>

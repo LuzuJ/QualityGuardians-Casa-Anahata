@@ -407,3 +407,41 @@ body, html {
     padding: 1rem;
   }
 }
+
+
+/* --- ESTILOS PARA MEJORAS DE FORMULARIO DE CONTRASEÑA --- */
+
+/* Contenedor para el campo de contraseña y el ícono de visibilidad */
+.campo-password-contenedor {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%; 
+}
+
+/* El campo de contraseña ahora ocupa casi todo el espacio, dejando sitio para el ícono */
+.campo-password-contenedor input {
+  width: 100%;
+  padding-right: 45px; /* Dejamos espacio para el ícono a la derecha */
+}
+
+/* Estilo para el ícono de "ojo" */
+.toggle-password {
+  position: absolute;
+  right: 10px; /* Posicionamos el ícono dentro del campo */
+  cursor: pointer;
+  color: var(--color-secundario);
+  user-select: none; /* Evita que el texto del ícono se seleccione */
+}
+
+/* Estilo para el texto de las reglas de la contraseña */
+.password-rules {
+  font-size: 0.8rem;
+  color: #bdc3c7; /* Un color suave que no distraiga */
+  padding-left: 5px;
+  list-style-type: none; /* Quitamos los puntos de la lista */
+  margin: -10px 0 0 0; /* Ajustamos el espaciado */
+}
+.password-rules li {
+  padding-bottom: 4px;
+}

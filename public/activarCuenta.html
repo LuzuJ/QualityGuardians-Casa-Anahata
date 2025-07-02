@@ -17,8 +17,22 @@
         </p>
 
         <input type="email" name="correo" placeholder="Tu correo electrónico" required>
-        <input type="password" name="nuevaContraseña" placeholder="Crea una contraseña" required>
-        <input type="password" name="confirmarContraseña" placeholder="Confirma tu contraseña" required>
+        <label for="nuevaContraseña">Crea una contraseña</label>
+        <div class="campo-password-contenedor">
+            <input type="password" id="nuevaContraseña" name="nuevaContraseña" required>
+            <span class="toggle-password">👁️</span>
+        </div>
+        <ul class="password-rules">
+            <li>Mínimo 8 caracteres</li>
+            <li>Una mayúscula y una minúscula</li>
+            <li>Al menos un número</li>
+            <li>Al menos un caracter especial</li>
+        </ul>
+        <label for="confirmarContraseña">Confirma tu contraseña</label>
+        <div class="campo-password-contenedor">
+            <input type="password" id="confirmarContraseña" name="confirmarContraseña" required>
+            <span class="toggle-password">👁️</span>
+        </div>
 
         <button type="submit" class="btn-primario">Activar y Guardar</button>
 

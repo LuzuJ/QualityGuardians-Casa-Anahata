@@ -1,24 +1,11 @@
 import { obtenerPosturaPorId } from './posturaService';
 import { supabase } from '../config/supabaseClient';
 import { Paciente } from '../models/paciente';
+import { validarContraseña } from '../utils/validacion';
 import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
-import { Sesion } from '../models/Sesion';
+import { Sesion } from '../models/sesion';
 
-// La función de validación no cambia
-const validarContraseña = (contraseña: string) => {
-    const minLength = 8;
-    const hasUpperCase = /[A-Z]/.test(contraseña);
-    const hasLowerCase = /[a-z]/.test(contraseña);
-    const hasNumbers = /\d/.test(contraseña);
-    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(contraseña);
- 
-    if (contraseña.length < minLength) throw new Error(`La contraseña debe tener al menos ${minLength} caracteres.`);
-    if (!hasUpperCase) throw new Error("La contraseña debe contener al menos una letra mayúscula.");
-    if (!hasLowerCase) throw new Error("La contraseña debe contener al menos una letra minúscula.");
-    if (!hasNumbers) throw new Error("La contraseña debe contener al menos un número.");
-    if (!hasSpecialChar) throw new Error("La contraseña debe contener al menos un carácter especial.");
-};
 
 // Se corrige el tipo para que coincida con el modelo Paciente actualizado
 export async function registrarPaciente(datosPaciente: Omit<Paciente, 'cedula' | 'contraseña' | 'estado' | 'serieAsignada'>, instructorId: string) {

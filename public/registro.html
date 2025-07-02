@@ -11,13 +11,30 @@
   <div class="contenedor-izquierdo">
     <h1 class="titulo-logo">Casa Anahata</h1>
     <div class="contenedor-formulario">
+
       <form class="formulario" method="POST" action="/registro">
         <h2>Registro para instructores</h2>
 
         <input type="text" name="nombre" placeholder="Nombre completo" required>
         <input type="email" name="correo" placeholder="Correo electrónico" required>
-        <input type="password" name="password" placeholder="Contraseña" required>
-        <input type="password" name="confirmar" placeholder="Confirmar contraseña" required>
+        <label for="password">Contraseña</label>
+        <div class="campo-password-contenedor">
+          <input type="password" id="password" name="password" placeholder="Crea una contraseña" required>
+          <span class="toggle-password">👁️</span>
+        </div>
+
+        <label for="confirmar">Confirmar Contraseña</label>
+        <div class="campo-password-contenedor">
+          <input type="password" id="confirmar" name="confirmar" placeholder="Confirma la contraseña" required>
+          <span class="toggle-password">👁️</span>
+        </div>
+
+        <ul class="password-rules">
+        <li>Mínimo 8 caracteres</li>
+        <li>Una mayúscula y una minúscula</li>
+        <li>Al menos un número</li>
+        <li>Al menos un caracter especial</li>
+      </ul>
 
         <button type="submit" class="btn-primario">Registrarme como Instructor</button>
 

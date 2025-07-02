@@ -1,7 +1,31 @@
 import { fetchApi } from './api';
 import { showToast } from './utils';
 
+function setupPasswordToggle(container: HTMLElement) {
+    const input = container.querySelector<HTMLInputElement>('input[type="password"], input[type="text"]');
+    const toggle = container.querySelector<HTMLElement>('.toggle-password');
+
+    if (!input || !toggle) return;
+
+    toggle.addEventListener('click', () => {
+        if (input.type === 'password') {
+            input.type = 'text';
+            toggle.textContent = '🙈';
+        } else {
+            input.type = 'password';
+            toggle.textContent = '👁️';
+        }
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+
+    const passwordContainer = document.querySelector('.campo-password-contenedor');
+    if (passwordContainer) {
+        setupPasswordToggle(passwordContainer as HTMLElement);
+    }
+
+    
     const form = document.querySelector<HTMLFormElement>('.formulario');
     const btnPaciente = form?.querySelector<HTMLButtonElement>('button[formaction="ejecutarSesion.html"]');
     const btnInstructor = form?.querySelector<HTMLButtonElement>('button[formaction="dashboard.html"]');
