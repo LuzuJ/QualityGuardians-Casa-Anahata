@@ -1,6 +1,12 @@
 # Este archivo le dice a Netlify cómo redirigir las llamadas a la API
 [[redirects]]
   from = "/api/*"
-  to = "https://qualityguardians-casa-anahata.onrender.com" 
+  to = "https://qualityguardians-casa-anahata.onrender.com/api/:splat" 
   status = 200
   force = true
+
+# Regla "Catch-All" para que la navegación en el frontend funcione correctamente
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
