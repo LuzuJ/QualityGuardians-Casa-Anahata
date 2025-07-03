@@ -1,7 +1,7 @@
 import { supabase } from '../config/supabaseClient';
 
 export async function obtenerEstadisticasInstructor(instructorId: string) {
-  // 1. Contar pacientes (esto funciona bien)
+  // 1. Contar pacientes 
   const { count: pacientesRegistrados, error: errorPacientes } = await supabase
     .from('Paciente')
     .select('cedula', { count: 'exact', head: true }) 
@@ -12,7 +12,7 @@ export async function obtenerEstadisticasInstructor(instructorId: string) {
       throw new Error("Error de base de datos al contar pacientes.");
   }
 
-  // 2. Contar series (esto funciona bien)
+  // 2. Contar series 
   const { count: seriesCreadas, error: errorSeries } = await supabase
     .from('Series')
     .select('id', { count: 'exact', head: true })

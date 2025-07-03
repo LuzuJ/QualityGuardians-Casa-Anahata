@@ -47,10 +47,6 @@ export const actualizarSerieHandler: RequestHandler = async (req, res) => {
     try {
         const { id } = req.params;
         const instructorId = req.user?.id;
-        
-        // Opcional: Verificar que la serie pertenezca al instructor que la edita.
-        // (Esto requeriría una consulta previa)
-
         const serieActualizada = await actualizarSerie(id, { ...req.body, instructorId });
         res.status(200).json({ mensaje: 'Serie actualizada correctamente', serie: serieActualizada });
     } catch (error: any) {

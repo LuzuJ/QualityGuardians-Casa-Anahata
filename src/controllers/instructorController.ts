@@ -13,7 +13,7 @@ export const registrarInstructorHandler: RequestHandler = async (req, res) => {
     const nuevoInstructor = await registrarInstructor(nombre, correo, contraseña);
     res.status(201).json(nuevoInstructor);
   } catch (error: any) {
-    // Devuelve el mensaje de error específico (ej. de la validación de contraseña)
+    // Devuelve el mensaje de error específico
     res.status(400).json({ error: error.message });
   }
 };

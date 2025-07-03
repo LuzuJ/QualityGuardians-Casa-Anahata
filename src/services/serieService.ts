@@ -12,9 +12,8 @@ export async function crearSerie(data: Omit<Serie, 'id'>): Promise<Serie> {
     ...data
   };
 
-  // Lógica de Supabase para insertar la nueva serie
   const { data: serieCreada, error } = await supabase
-    .from('Series') // Nombre EXACTO de tu tabla en Supabase
+    .from('Series') 
     .insert(nuevaSerieConId)
     .select()
     .single();
@@ -28,7 +27,6 @@ export async function crearSerie(data: Omit<Serie, 'id'>): Promise<Serie> {
 }
 
 export async function obtenerTodasLasSeries(): Promise<Serie[]> {
-  // Lógica de Supabase para seleccionar todas las series
   const { data, error } = await supabase
     .from('Series')
     .select('*');
@@ -67,7 +65,7 @@ export async function obtenerSeriesPorInstructor(instructorId: string): Promise<
   const { data, error } = await supabase
     .from('Series')
     .select('*')
-    .eq('instructorId', instructorId); // <-- LA LÍNEA CLAVE DEL FILTRADO
+    .eq('instructorId', instructorId); 
 
   if (error) {
     console.error("Error al obtener las series por instructor:", error);
