@@ -1,9 +1,15 @@
 // public/ts/ejecutarSesion.ts
 
 import { fetchApi, showToast } from './api';
-import type { Paciente } from './types'; // Importamos el tipo Paciente
+import type { Paciente } from './types';
+import { verificarAutenticacion, cerrarSesion } from './utils';
 
 document.addEventListener('DOMContentLoaded', async () => {
+    verificarAutenticacion(); 
+    
+    const btnCerrarSesion = document.querySelector('.btn-cerrar-sesion');
+    btnCerrarSesion?.addEventListener('click', cerrarSesion);
+
     const form = document.querySelector<HTMLFormElement>('.formulario');
     const progresoEl = document.querySelector<HTMLDivElement>('#progreso-sesiones');
 

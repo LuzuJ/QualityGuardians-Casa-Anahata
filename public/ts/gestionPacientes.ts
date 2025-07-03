@@ -1,7 +1,13 @@
 import { fetchApi, showToast } from './api';
 import type { Paciente } from './types';
+import { verificarAutenticacion, cerrarSesion } from './utils';
 
 document.addEventListener('DOMContentLoaded', async () => {
+    verificarAutenticacion(); 
+
+    const btnCerrarSesion = document.querySelector('.btn-cerrar-sesion');
+    btnCerrarSesion?.addEventListener('click', cerrarSesion);
+
     const addPatientForm = document.querySelector<HTMLFormElement>('.formulario');
     const patientListUl = document.querySelector<HTMLUListElement>('h3 + ul');
     const formTitle = addPatientForm?.querySelector<HTMLHeadingElement>('h3');

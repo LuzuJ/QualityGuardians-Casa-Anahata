@@ -1,5 +1,6 @@
 import { fetchApi, showToast } from "./api";
 import type { Postura } from "./types";
+import { verificarAutenticacion, cerrarSesion } from "./utils";
 
 /**
  * Función mejorada para extraer el ID de un video de YouTube desde varios formatos de URL.
@@ -14,6 +15,11 @@ function getYouTubeVideoId(url: string): string | null {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+    verificarAutenticacion(); 
+    
+    const btnCerrarSesion = document.querySelector('.btn-cerrar-sesion');
+    btnCerrarSesion?.addEventListener('click', cerrarSesion);
+
     const urlParams = new URLSearchParams(window.location.search);
     const posturaId = urlParams.get('posturaId');
 

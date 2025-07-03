@@ -1,9 +1,13 @@
-// public/ts/detalleSesion.ts
-
 import { fetchApi, showToast } from "./api";
-import type { Sesion } from "./types"; // Asegúrate de que la interfaz Sesion esté en types.ts
+import type { Sesion } from "./types"; 
+import { verificarAutenticacion, cerrarSesion } from "./utils";
 
 document.addEventListener('DOMContentLoaded', async () => {
+    verificarAutenticacion(); 
+    
+    const btnCerrarSesion = document.querySelector('.btn-cerrar-sesion');
+    btnCerrarSesion?.addEventListener('click', cerrarSesion);
+
     const container = document.querySelector<HTMLDivElement>('.contenido-panel .tarjeta');
     if (!container) return;
 

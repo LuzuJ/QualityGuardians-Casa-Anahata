@@ -1,7 +1,13 @@
 import { fetchApi, showToast } from "./api";
 import type { Postura, Serie } from "./types";
+import { verificarAutenticacion, cerrarSesion } from "./utils";
 
 document.addEventListener('DOMContentLoaded', async () => {
+    verificarAutenticacion(); 
+    
+    const btnCerrarSesion = document.querySelector('.btn-cerrar-sesion');
+    btnCerrarSesion?.addEventListener('click', cerrarSesion);
+
     // --- Referencias a elementos del DOM (Tu código ya estaba bien aquí) ---
     const form = document.querySelector<HTMLFormElement>('.formulario');
     const nombreInput = document.querySelector<HTMLInputElement>('#nombreSerie');

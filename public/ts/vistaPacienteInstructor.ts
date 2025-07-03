@@ -1,9 +1,14 @@
-// public/ts/vistaPacienteInstructor.ts
-
 import { fetchApi, showToast } from "./api";
 import type { Paciente, Sesion } from "./types";
+import { verificarAutenticacion, cerrarSesion } from "./utils";
 
 document.addEventListener('DOMContentLoaded', async () => {
+    verificarAutenticacion(); 
+    
+    const btnCerrarSesion = document.querySelector('.btn-cerrar-sesion');
+    btnCerrarSesion?.addEventListener('click', cerrarSesion);
+
+
     const urlParams = new URLSearchParams(window.location.search);
     const pacienteId = urlParams.get('pacienteId');
 
