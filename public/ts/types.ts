@@ -17,6 +17,8 @@ export interface Sesion {
 
 // Interfaz para los datos de un Paciente
 export interface Paciente {
+  observaciones: string;
+  genero: string;
   cedula: string;
   nombre: string;
   correo: string;
