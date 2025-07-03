@@ -1,4 +1,5 @@
 import { fetchApi } from './api';
+import { verificarAutenticacion, cerrarSesion } from './utils';
 
 // Definimos cómo lucirá el objeto de estadísticas
 interface DashboardStats {
@@ -8,7 +9,12 @@ interface DashboardStats {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+    verificarAutenticacion(); 
     document.body.classList.add('mostrar');
+
+
+    const btnCerrarSesion = document.querySelector('.btn-cerrar-sesion');
+    btnCerrarSesion?.addEventListener('click', cerrarSesion);
 
     // Seleccionamos los elementos de la lista que vamos a actualizar
     const strongPacientes = document.querySelector<HTMLElement>('ul li:nth-child(1) strong');

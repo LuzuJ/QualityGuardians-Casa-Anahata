@@ -11,7 +11,7 @@
   <div class="barra">
     <img src="/assets/img/logo.png" alt="Logo" class="logo" />
     <div class="marca">Casa Anahata</div>
-    <button class="btn-cerrar-sesion" onclick="location.href='inicioSesion.html'">Cerrar sesión</button>
+    <button class="btn-cerrar-sesion">Cerrar sesión</button>
   </div>
 
   <div class="panel">
@@ -46,6 +46,17 @@
 
           <label for="fechaNacimiento">Fecha de nacimiento</label>
           <input type="date" id="fechaNacimiento" name="fechaNacimiento" class="input-reducido" required />
+
+          <label for="genero">Género</label>
+            <select id="genero" name="genero">
+                <option value="">Seleccione...</option>
+                <option value="femenino">Femenino</option>
+                <option value="masculino">Masculino</option>
+                <option value="otro">Prefiero No Decir</option>
+            </select>
+
+          <label for="observaciones">Observaciones (Opcional)</label>
+          <textarea id="observaciones" name="observaciones" rows="3" placeholder="Anotaciones sobre el paciente..."></textarea>
 
           <button type="submit" class="btn-primario">Agregar paciente</button>
         </form>

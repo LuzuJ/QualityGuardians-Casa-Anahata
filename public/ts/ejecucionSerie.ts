@@ -2,8 +2,15 @@
 
 import { fetchApi, showToast } from "./api";
 import type { Serie } from "./types";
+import { verificarAutenticacion, cerrarSesion } from "./utils";
 
 document.addEventListener('DOMContentLoaded', async () => {
+    verificarAutenticacion(); 
+    
+    const btnCerrarSesion = document.querySelector('.btn-cerrar-sesion');
+    btnCerrarSesion?.addEventListener('click', cerrarSesion);
+
+
     // --- REFERENCIAS A ELEMENTOS DEL DOM ---
     const tituloEl = document.getElementById('postura-titulo');
     const imagenEl = document.getElementById('postura-imagen') as HTMLImageElement;

@@ -45,7 +45,7 @@ export async function actualizarPaciente(cedula: string, datos: Partial<Omit<Pac
 export async function obtenerPacientesPorInstructor(instructorId: string): Promise<Partial<Paciente>[]> {
     const { data, error } = await supabase
         .from('Paciente')
-        .select('cedula, nombre, correo, fechaNacimiento, telefono')
+        .select('cedula, nombre, correo, fechaNacimiento, telefono, genero, observaciones')
         .eq('instructorId', instructorId);
 
     if (error) {

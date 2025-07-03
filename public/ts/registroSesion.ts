@@ -1,7 +1,12 @@
 import { fetchApi } from "./api";
-import { showToast } from "./utils";
+import { showToast, verificarAutenticacion, cerrarSesion } from "./utils";
 
 document.addEventListener('DOMContentLoaded', () => {
+    verificarAutenticacion(); 
+    
+    const btnCerrarSesion = document.querySelector('.btn-cerrar-sesion');
+    btnCerrarSesion?.addEventListener('click', cerrarSesion);
+
     const form = document.querySelector<HTMLFormElement>('.formulario');
     
     // --- LEEMOS TODOS LOS PARÁMETROS DE LA URL ---

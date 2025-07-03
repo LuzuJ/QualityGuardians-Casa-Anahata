@@ -1,8 +1,13 @@
 import { fetchApi } from './api';
-import { showToast } from './utils';
+import { showToast, verificarAutenticacion, cerrarSesion } from './utils';
 import type { Paciente, Serie } from './types';
 
 document.addEventListener('DOMContentLoaded', async () => {
+    verificarAutenticacion(); 
+    
+    const btnCerrarSesion = document.querySelector('.btn-cerrar-sesion');
+    btnCerrarSesion?.addEventListener('click', cerrarSesion);
+
     document.body.classList.add('mostrar');
     const pacienteSelect = document.querySelector<HTMLSelectElement>('#pacienteId');
     const serieSelect = document.querySelector<HTMLSelectElement>('#serieId');

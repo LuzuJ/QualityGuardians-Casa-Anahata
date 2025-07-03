@@ -1,7 +1,29 @@
 import { fetchApi, showToast } from './api';
 import type { Paciente } from './types';
+import { verificarAutenticacion, cerrarSesion } from './utils';
+
+function validarCedula(cedula: string): boolean {
+    if (typeof cedula !== 'string' || cedula.length !== 10 || !/^\d+$/.test(cedula)) {
+        return false;
+    }
+    const digitos = cedula.split('').map(Number);
+    const verificador = digitos.pop();
+    const suma = digitos.reduce((acc, val, i) => {
+        let prod = val * (i % 2 === 0 ? 2 : 1);
+        if (prod > 9) prod -= 9;
+        return acc + prod;
+    }, 0);
+    const resultado = (Math.ceil(suma / 10) * 10) - suma;
+    return verificador === (resultado === 10 ? 0 : resultado);
+}
+
 
 document.addEventListener('DOMContentLoaded', async () => {
+    verificarAutenticacion(); 
+
+    const btnCerrarSesion = document.querySelector('.btn-cerrar-sesion');
+    btnCerrarSesion?.addEventListener('click', cerrarSesion);
+
     const addPatientForm = document.querySelector<HTMLFormElement>('.formulario');
     const patientListUl = document.querySelector<HTMLUListElement>('h3 + ul');
     const formTitle = addPatientForm?.querySelector<HTMLHeadingElement>('h3');
@@ -12,8 +34,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     const correoInput = addPatientForm?.querySelector<HTMLInputElement>('input[type="email"]');
     const telefonoInput = addPatientForm?.querySelector<HTMLInputElement>('input[type="tel"]');
     const fechaInput = addPatientForm?.querySelector<HTMLInputElement>('input[type="date"]');
+    const generoSelect = addPatientForm?.querySelector<HTMLSelectElement>('select[name="genero"]');
+    const observacionesTextarea = addPatientForm?.querySelector<HTMLTextAreaElement>('textarea[name="observaciones"]');
 
-    if (!addPatientForm || !patientListUl || !formTitle || !submitButton || !cedulaInput || !nombreInput || !correoInput || !telefonoInput || !fechaInput) return;
+    if (!addPatientForm || !patientListUl || !formTitle || !submitButton || !cedulaInput || !nombreInput || !correoInput || !telefonoInput || !fechaInput || !generoSelect || !observacionesTextarea) return;
 
     let modoEdicion = false;
     let pacienteIdEditando: string | null = null;
@@ -64,6 +88,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (paciente.fechaNacimiento) {
             fechaInput.value = paciente.fechaNacimiento.split('T')[0]; // Formato YYYY-MM-DD
         }
+        if (generoSelect) {
+            generoSelect.value = paciente.genero || '';
+        }
+        if (observacionesTextarea) {
+            observacionesTextarea.value = paciente.observaciones || '';
+        }
 
         formTitle.textContent = 'Editar Paciente';
         submitButton.textContent = 'Guardar Cambios';
@@ -86,8 +116,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             nombre: nombreInput.value,
             correo: correoInput.value,
             telefono: telefonoInput.value,
-            fechaNacimiento: fechaInput.value
+            fechaNacimiento: fechaInput.value, 
+            genero: generoSelect?.value || '',
+            observaciones: observacionesTextarea.value || ''
         };
+        if (!validarCedula(cedulaInput.value)) {
+            return showToast('El número de cédula no es válido.', 'error');
+        }
+        if (!/^\d{10}$/.test(telefonoInput.value)) {
+            return showToast('El número de teléfono debe contener solo números (de 7 a 10 dígitos).', 'error');
+        }
         try {
             if (modoEdicion && pacienteIdEditando) {
                 await fetchApi(`/pacientes/${pacienteIdEditando}`, {
