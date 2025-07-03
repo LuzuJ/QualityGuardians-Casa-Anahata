@@ -5,7 +5,8 @@
     "outDir": "./dist", // Directorio de salida para los archivos .js
     "rootDir": "./src", // Directorio raíz de tus archivos .ts
     "strict": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "skipLibCheck": true
   },
   "include": ["src/**/*"] // Asegúrate de que solo compile lo que está en 'src'
 }

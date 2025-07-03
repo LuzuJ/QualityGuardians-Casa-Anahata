@@ -1,0 +1,7 @@
+# Este archivo le dice a Netlify cómo redirigir las llamadas a la API
+[[redirects]]
+  from = "/api/*"
+  to = "https://qualityguardians-casa-anahata.onrender.com/api/:splat" 
+  status = 200
+  force = true
+
