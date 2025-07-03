@@ -16,26 +16,40 @@
 
   <div class="panel">
     <div class="menu-lateral">
-        <button class="btn-menu" onclick="location.href='dashboard.html'">Dashboard</button>
-        <button class="btn-menu" onclick="location.href='gestionPacientes.html'">Gestionar pacientes</button>
-        <button class="btn-menu" onclick="location.href='gestionSeries.html'">Gestionar series</button>
-        <button class="btn-menu" onclick="location.href='crearSerie.html'">Crear serie terapéutica</button>
-        <button class="btn-menu" onclick="location.href='asignarSerie.html'">Asignar serie</button>
-      </div>
+      <button class="btn-menu" onclick="location.href='dashboard.html'">Dashboard</button>
+      <button class="btn-menu" onclick="location.href='gestionPacientes.html'">Gestionar pacientes</button>
+      <button class="btn-menu" onclick="location.href='gestionSeries.html'">Gestionar series</button>
+      <button class="btn-menu" onclick="location.href='crearSerie.html'">Crear serie terapéutica</button>
+      <button class="btn-menu" onclick="location.href='asignarSerie.html'">Asignar serie</button>
+    </div>
 
     <div class="contenido-panel">
       <div class="tarjeta">
         <h2>Gestión de Pacientes</h2>
         <form class="formulario">
-        <h3>Agregar nuevo paciente</h3>
-        <input type="text" name="cedula" placeholder="Cédula del paciente" required />
-        <input type="text" name="nombre" placeholder="Nombre completo" required />
-        <input type="email" name="correo" placeholder="Correo electrónico" required />
-        <input type="tel" name="telefono" placeholder="Teléfono" required/>
-        <input type="date" name="fechaNacimiento" placeholder="Fecha de nacimiento" required />
-  
-  <button type="submit" class="btn-primario">Agregar paciente</button>
-</form>
+          <h3>Agregar nuevo paciente</h3>
+
+          <input type="text" id="cedula" name="cedula" class="input-reducido"
+                 placeholder="Cédula del paciente" maxlength="10" pattern="[0-9]{10}"
+                 title="Debe ingresar exactamente 10 dígitos numéricos" required />
+
+          <input type="text" id="nombre" name="nombre" class="input-reducido"
+                 placeholder="Nombre completo" required />
+
+
+          <input type="email" id="correo" name="correo" class="input-reducido"
+                 placeholder="Correo electrónico" required />
+
+          <input type="tel" id="telefono" name="telefono" class="input-reducido"
+                 placeholder="Teléfono" maxlength="10" pattern="[0-9]{10}"
+                 title="Debe ingresar exactamente 10 dígitos numéricos" required />
+
+          <label for="fechaNacimiento">Fecha de nacimiento</label>
+          <input type="date" id="fechaNacimiento" name="fechaNacimiento" class="input-reducido" required />
+
+          <button type="submit" class="btn-primario">Agregar paciente</button>
+        </form>
+
         <br />
         <h3>Pacientes registrados</h3>
         <ul>
@@ -45,6 +59,5 @@
       </div>
     </div>
   </div>
-
 </body>
 </html>

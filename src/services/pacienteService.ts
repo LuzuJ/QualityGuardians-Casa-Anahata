@@ -7,7 +7,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { Sesion } from '../models/sesion';
 
 
-// Se corrige el tipo para que coincida con el modelo Paciente actualizado
 export async function registrarPaciente(datosPaciente: Omit<Paciente, 'cedula' | 'contraseña' | 'estado' | 'serieAsignada'>, instructorId: string) {
     const { data: existentePorCorreo } = await supabase
         .from('Paciente')
@@ -43,7 +42,6 @@ export async function actualizarPaciente(cedula: string, datos: Partial<Omit<Pac
     return data;
 }
 
-// Se simplifica la función para que sea más segura
 export async function obtenerPacientesPorInstructor(instructorId: string): Promise<Partial<Paciente>[]> {
     const { data, error } = await supabase
         .from('Paciente')
@@ -57,7 +55,6 @@ export async function obtenerPacientesPorInstructor(instructorId: string): Promi
     return data || [];
 }
 
-// Se corrige la validación de la contraseña para que use el nombre correcto de la columna
 export async function establecerPasswordPaciente(correo: string, nuevaContraseña: string) {
     validarContraseña(nuevaContraseña);
     const { data: paciente, error: findError } = await supabase.from('Paciente').select('*').eq('correo', correo).single();
@@ -72,7 +69,6 @@ export async function establecerPasswordPaciente(correo: string, nuevaContraseñ
     return { message: "Cuenta activada y contraseña establecida con éxito." };
 }
 
-// La función para asignar series no necesita cambios
 export async function asignarSerieAPaciente(pacienteCedula: string, serieId: string) {
     const { data: serieAAsignar } = await supabase.from('Series').select('*').eq('id', serieId).single();
     if (!serieAAsignar) throw new Error('Serie no encontrada');
@@ -88,7 +84,6 @@ export async function asignarSerieAPaciente(pacienteCedula: string, serieId: str
     return data;
 }
 
-// La función para obtener la serie asignada no necesita cambios
 export async function obtenerSerieAsignada(pacienteCedula: string) { 
     const { data: paciente, error: errorPaciente } = await supabase.from('Paciente').select('serieAsignada').eq('cedula', pacienteCedula).single();
     if (errorPaciente || !paciente || !paciente.serieAsignada) {
@@ -110,7 +105,6 @@ export async function obtenerSerieAsignada(pacienteCedula: string) {
     return serieParaFrontend;
 }
 
-// La función para registrar la sesión completada no necesita cambios
 export async function registrarSesionCompletada(pacienteId: string, datosSesion: Omit<Sesion, 'id' | 'pacienteId' | 'seriesId' | 'fecha'>) {
     const { data: paciente, error: findError } = await supabase.from('Paciente').select('cedula, serieAsignada').eq('cedula', pacienteId).single();
     if (findError || !paciente) throw new Error('Paciente no encontrado');
@@ -142,7 +136,6 @@ export async function registrarSesionCompletada(pacienteId: string, datosSesion:
     return { message: 'Sesión registrada con éxito' };
 }
 
-// La función para obtener el historial no necesita cambios
 export async function obtenerHistorialDePaciente(pacienteCedula: string): Promise<Sesion[]> { 
     const { data, error } = await supabase.from('Sesiones').select('*').eq('pacienteId', pacienteCedula).order('fecha', { ascending: false });
     if (error) {
@@ -152,7 +145,6 @@ export async function obtenerHistorialDePaciente(pacienteCedula: string): Promis
     return data || [];
 }
 
-// Se corrige la selección para no incluir la columna inexistente 'historialSesiones'
 export async function obtenerPacientePorCedula(cedula: string): Promise<Paciente> {
     const { data, error } = await supabase
         .from('Paciente')
