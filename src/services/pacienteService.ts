@@ -86,7 +86,7 @@ export async function asignarSerieAPaciente(pacienteCedula: string, serieId: str
 
 export async function obtenerSerieAsignada(pacienteCedula: string) { 
     const { data: paciente, error: errorPaciente } = await supabase.from('Paciente').select('serieAsignada').eq('cedula', pacienteCedula).single();
-    if (errorPaciente || !paciente || !paciente.serieAsignada) {
+    if (errorPaciente || !paciente?.serieAsignada ) {
         throw new Error('No tienes una serie terapéutica asignada.');
     }
     const idSerieAsignada = paciente.serieAsignada.idSerie;
@@ -95,13 +95,13 @@ export async function obtenerSerieAsignada(pacienteCedula: string) {
         throw new Error('La serie asignada ya no existe o no pudo ser encontrada.');
     }
     const posturasEnriquecidas = await Promise.all(
-        (serieIncompleta.posturas || []).map(async (p: { idPostura: string, duracionMinutos: number }) => {
+        (serieIncompleta.posturas ?? []).map(async (p: { idPostura: string, duracionMinutos: number }) => {
             const detallesPostura = await obtenerPosturaPorId(p.idPostura);
             return { ...detallesPostura, duracionMinutos: p.duracionMinutos };
         })
     );
     const serieParaFrontend = { ...serieIncompleta, secuencia: posturasEnriquecidas };
-    delete (serieParaFrontend as any).posturas;
+    delete serieParaFrontend.posturas;
     return serieParaFrontend;
 }
 
@@ -130,7 +130,7 @@ export async function registrarSesionCompletada(pacienteId: string, datosSesion:
     }
     const serieActualizada = {
         ...paciente.serieAsignada,
-        sesionesCompletadas: (paciente.serieAsignada.sesionesCompletadas || 0) + 1
+        sesionesCompletadas: (paciente.serieAsignada.sesionesCompletadas ?? 0) + 1
     };
     await supabase.from('Paciente').update({ serieAsignada: serieActualizada }).eq('cedula', pacienteId);
     return { message: 'Sesión registrada con éxito' };

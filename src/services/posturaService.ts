@@ -20,9 +20,9 @@ const transformarPostura = (dbPostura: any): Postura => {
   return {
     id: dbPostura.id,
     nombre: dbPostura.nombre,
-    nombreSanskrito: dbPostura.nombreSanskrito || '',
-    fotoUrl: dbPostura.fotoUrl || '',
-    videoUrl: dbPostura.videoUrl || '',
+    nombreSanskrito: dbPostura.nombreSanskrito ?? '',
+    fotoUrl: dbPostura.fotoUrl ?? '',
+    videoUrl: dbPostura.videoUrl ?? '',
     descripcion: descripcion,
     beneficios: beneficios,
     modificaciones: modificaciones,

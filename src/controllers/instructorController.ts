@@ -1,7 +1,7 @@
-import { RequestHandler } from 'express';
+import { Request, Response } from 'express';
 import { registrarInstructor } from '../services/instructorService';
 
-export const registrarInstructorHandler: RequestHandler = async (req, res) => {
+export const registrarInstructorHandler = async (req: Request, res: Response) => {
   try {
     const { nombre, correo, contraseña } = req.body;
     

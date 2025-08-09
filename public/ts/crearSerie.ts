@@ -1,137 +1,40 @@
 import { fetchApi, showToast } from "./api";
 import type { Postura } from "./types";
 import { verificarAutenticacion, cerrarSesion } from "./utils";
+import { renderPosturasDisponibles, setupAddPosturaButton } from "./serie-ui-manager";
 
 document.addEventListener('DOMContentLoaded', async () => {
-    verificarAutenticacion(); 
+    verificarAutenticacion();
     
     const btnCerrarSesion = document.querySelector('.btn-cerrar-sesion');
     btnCerrarSesion?.addEventListener('click', cerrarSesion);
 
-    // --- Referencias a elementos del DOM ---
     const form = document.querySelector<HTMLFormElement>('.formulario');
     const tipoTerapiaSelect = document.querySelector<HTMLSelectElement>('#tipoTerapia');
-    
-    // Elementos del nuevo selector visual
     const selectorVisualContainer = document.querySelector<HTMLDivElement>('#selector-posturas-visual');
-    const disponiblesContainer = document.querySelector<HTMLDivElement>('#lista-posturas-disponibles');
-    
-    // Elementos de la previsualización
-    const previewNombre = document.querySelector<HTMLHeadingElement>('#preview-nombre');
-    const previewImagen = document.querySelector<HTMLImageElement>('#preview-imagen');
-    const previewDescripcion = document.querySelector<HTMLParagraphElement>('#preview-descripcion');
-    
-    // Botones de acción y listas
-    const addPosturaBtn = document.querySelector<HTMLButtonElement>('#add-postura-btn');
-    const duracionInput = document.querySelector<HTMLInputElement>('#duracion-input');
     const serieEnConstruccionList = document.querySelector<HTMLUListElement>('#lista-serie-construccion');
     const posturasOcultasContainer = document.querySelector<HTMLDivElement>('#posturas-ocultas-container');
 
-    if (!form || !tipoTerapiaSelect || !selectorVisualContainer || !disponiblesContainer || !previewNombre || !previewImagen || !previewDescripcion || !addPosturaBtn || !duracionInput || !serieEnConstruccionList || !posturasOcultasContainer) return;
+    if (!form || !tipoTerapiaSelect || !selectorVisualContainer || !serieEnConstruccionList || !posturasOcultasContainer) return;
 
-    let posturasDisponibles: Postura[] = [];
-    let posturaSeleccionada: Postura | null = null;
+    // Configura el botón de "Añadir" usando el módulo
+    setupAddPosturaButton();
 
-    // --- LÓGICA PRINCIPAL ---
-
-    // 1. Cuando el instructor selecciona un tipo de terapia...
+    // Lógica para cargar las posturas al cambiar la terapia
     tipoTerapiaSelect.addEventListener('change', async () => {
         const terapia = tipoTerapiaSelect.value;
-        if (!terapia) {
-            selectorVisualContainer.style.display = 'none';
-            return;
-        }
+        selectorVisualContainer.style.display = terapia ? 'flex' : 'none';
+        if (!terapia) return;
 
-        // ...hacemos una llamada al backend para traer solo las posturas de esa terapia
         try {
-            disponiblesContainer.innerHTML = '<p>Cargando posturas...</p>';
-            posturasDisponibles = await fetchApi<Postura[]>(`/posturas?tipoTerapia=${terapia}`);
-            selectorVisualContainer.style.display = 'flex';
-            renderPosturasDisponibles();
+            const posturas = await fetchApi<Postura[]>(`/posturas?tipoTerapia=${terapia}`);
+            renderPosturasDisponibles(posturas);
         } catch (error) {
             if (error instanceof Error) showToast(error.message, 'error');
         }
     });
 
-    // 2. Función para renderizar la lista de posturas disponibles
-    const renderPosturasDisponibles = () => {
-        disponiblesContainer.innerHTML = '';
-        if (posturasDisponibles.length === 0) {
-            disponiblesContainer.innerHTML = '<p>No hay posturas para esta terapia.</p>';
-            return;
-        }
-
-        posturasDisponibles.forEach(postura => {
-            const div = document.createElement('div');
-            div.textContent = postura.nombre;
-            div.className = 'postura-disponible-item';
-            div.style.padding = '8px';
-            div.style.cursor = 'pointer';
-            div.style.borderRadius = '4px';
-
-            // Cuando se hace clic en una postura, se muestra en la previsualización
-            div.addEventListener('click', () => {
-                document.querySelectorAll('.postura-disponible-item').forEach(el => el.classList.remove('activo'));
-                div.classList.add('activo');
-                mostrarPreview(postura);
-            });
-            disponiblesContainer.appendChild(div);
-        });
-    };
-
-    // 3. Función para mostrar la postura seleccionada en el área de preview
-    const mostrarPreview = (postura: Postura) => {
-        posturaSeleccionada = postura;
-        previewNombre.textContent = postura.nombre;
-        previewImagen.src = postura.fotoUrl;
-        previewImagen.style.display = 'block';
-        previewDescripcion.textContent = postura.descripcion.join(' ');
-        addPosturaBtn.disabled = false;
-    };
-    
-    // 4. Cuando se pulsa el botón "Añadir a la Serie"
-    addPosturaBtn.addEventListener('click', () => {
-        if (!posturaSeleccionada) return;
-
-        const id = posturaSeleccionada.id;
-        const nombre = posturaSeleccionada.nombre;
-        const duracion = duracionInput.value;
-
-        // Añadir a la lista visual
-        const li = document.createElement('li');
-        li.textContent = `${nombre} - ${duracion} min.`;
-        li.dataset.id = id;
-
-        const removeBtn = document.createElement('button');
-        removeBtn.textContent = 'Quitar';
-        removeBtn.className = 'btn-secundario';
-        removeBtn.style.marginLeft = '10px';
-        removeBtn.onclick = () => {
-            li.remove();
-            document.querySelector(`input[name="posturas[]"][value="${id}"]`)?.remove();
-            document.querySelector(`input[name="duracion[]"][data-id="${id}"]`)?.remove();
-        };
-        
-        li.appendChild(removeBtn);
-        serieEnConstruccionList.appendChild(li);
-
-        // Añadir a los campos ocultos que se enviarán con el formulario
-        const hiddenIdInput = document.createElement('input');
-        hiddenIdInput.type = 'hidden';
-        hiddenIdInput.name = 'posturas[]';
-        hiddenIdInput.value = id;
-
-        const hiddenDuracionInput = document.createElement('input');
-        hiddenDuracionInput.type = 'hidden';
-        hiddenDuracionInput.name = 'duracion[]';
-        hiddenDuracionInput.value = duracion;
-        hiddenDuracionInput.dataset.id = id;
-
-        posturasOcultasContainer.append(hiddenIdInput, hiddenDuracionInput);
-    });
-
-
-    // 5. Envío final del formulario
+    // Lógica para enviar el formulario
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         

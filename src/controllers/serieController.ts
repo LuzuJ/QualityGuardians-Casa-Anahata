@@ -1,4 +1,4 @@
-import { Request, RequestHandler, Response } from 'express';
+import { Request, Response } from 'express';
 import { crearSerie, actualizarSerie, 
   obtenerSeriePorId, obtenerSeriesPorInstructor } from '../services/serieService';
 
@@ -7,7 +7,7 @@ export const crearSerieHandler = async (req: Request, res: Response): Promise<vo
     const instructorId = (req as any).user?.id;
     const { nombre, tipoTerapia, posturas, sesionesRecomendadas } = req.body;
 
-    if (!nombre || !tipoTerapia || !posturas || !posturas.length || !sesionesRecomendadas) {
+    if (!nombre || !tipoTerapia || !posturas?.length || !sesionesRecomendadas) {
       res.status(400).json({ error: 'Todos los campos son obligatorios' });
       return;
     }
@@ -26,7 +26,7 @@ export const crearSerieHandler = async (req: Request, res: Response): Promise<vo
   }
 };
 
-export const listarSeriesHandler: RequestHandler = async (req, res) => {
+export const listarSeriesHandler = async (req: Request, res: Response) => {
   try {
     // 1. Obtenemos el ID del instructor autenticado desde el token
     const instructorId = req.user?.id;
@@ -43,7 +43,7 @@ export const listarSeriesHandler: RequestHandler = async (req, res) => {
   }
 };
 
-export const actualizarSerieHandler: RequestHandler = async (req, res) => {
+export const actualizarSerieHandler = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
         const instructorId = req.user?.id;
@@ -54,7 +54,7 @@ export const actualizarSerieHandler: RequestHandler = async (req, res) => {
     }
 };
 
-export const obtenerSerieHandler: RequestHandler = async (req, res) => {
+export const obtenerSerieHandler = async (req: Request, res: Response) => {
     try {
         const serie = await obtenerSeriePorId(req.params.id);
         res.status(200).json(serie);
