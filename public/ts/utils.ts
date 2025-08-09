@@ -52,3 +52,24 @@ export function cerrarSesion() {
         window.location.href = 'inicioSesion.html';
     }, 1000);
 }
+
+/**
+ * Configura la funcionalidad de mostrar/ocultar para un campo de contraseña.
+ * @param container El elemento contenedor que tiene el input y el botón de toggle.
+ */
+export function setupPasswordToggle(container: HTMLElement) {
+    const input = container.querySelector<HTMLInputElement>('input[type="password"], input[type="text"]');
+    const toggle = container.querySelector<HTMLElement>('.toggle-password');
+
+    if (!input || !toggle) return;
+
+    toggle.addEventListener('click', () => {
+        if (input.type === 'password') {
+            input.type = 'text';
+            toggle.textContent = '🙈';
+        } else {
+            input.type = 'password';
+            toggle.textContent = '👁️';
+        }
+    });
+}

@@ -1,7 +1,7 @@
-import { RequestHandler } from "express"; 
+import { Request, Response } from 'express';
 import { obtenerEstadisticasInstructor } from "../services/statsService";
 
-export const obtenerEstadisticasHandler: RequestHandler = async (req, res) => {
+export const obtenerEstadisticasHandler = async (req: Request, res: Response) => {
     try {
         const instructorId = req.user?.id;
         if (!instructorId) {

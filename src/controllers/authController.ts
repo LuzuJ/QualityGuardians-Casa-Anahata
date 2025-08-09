@@ -1,7 +1,7 @@
-import { RequestHandler } from 'express';
 import { loginInstructor, loginPaciente } from '../services/authService';
+import { Request, Response } from 'express';
 
-export const loginHandler: RequestHandler = async (req, res) => {
+export const loginHandler = async (req: Request, res: Response) => {
   try {
     const { correo, contraseña, rol } = req.body;
     if (!correo || !contraseña || !rol) {

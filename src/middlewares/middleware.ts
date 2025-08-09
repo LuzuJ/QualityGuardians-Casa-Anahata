@@ -23,6 +23,7 @@ export function verificarToken(req: Request, res: Response, next: NextFunction):
 
     next();
   } catch (error) {
+    console.error('Error de autenticación de token:', error); 
     res.status(401).json({ error: 'Token inválido' });
   }
 }

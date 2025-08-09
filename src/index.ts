@@ -10,6 +10,7 @@ import sesionRoutes from './routes/sesionRoutes';
 import statsRoutes from './routes/statsRoutes';
 
 const app = express();
+app.disable('x-powered-by');
 
 const corsOptions = {
   origin: 'http://localhost:5173'

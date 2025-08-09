@@ -1,11 +1,11 @@
-import { RequestHandler } from 'express';
+import { Request, Response } from 'express';
 import { 
     registrarPaciente, obtenerPacientesPorInstructor, actualizarPaciente, 
     establecerPasswordPaciente, asignarSerieAPaciente, obtenerSerieAsignada, 
     obtenerHistorialDePaciente, obtenerPacientePorCedula 
 } from '../services/pacienteService';
 
-export const crearPacienteHandler: RequestHandler = async (req, res) => {
+export const crearPacienteHandler= async (req: Request, res: Response) => {
   try {
     // 1. Obtenemos el ID del instructor desde el token (del usuario autenticado)
     const instructorId = req.user?.id;
@@ -23,7 +23,7 @@ export const crearPacienteHandler: RequestHandler = async (req, res) => {
   }
 };
  
-export const actualizarPacienteHandler: RequestHandler = async (req, res) => {
+export const actualizarPacienteHandler= async (req: Request, res: Response) => {
   try {
     const pacienteActualizado = await actualizarPaciente(req.params.cedula, req.body);
     res.json({ mensaje: 'Paciente actualizado correctamente', paciente: pacienteActualizado });
@@ -33,7 +33,7 @@ export const actualizarPacienteHandler: RequestHandler = async (req, res) => {
   }
 };
 
-export const listarPacientesHandler: RequestHandler = async (req, res) => {
+export const listarPacientesHandler= async (req: Request, res: Response) => {
     try {
         const instructorId = req.user?.id;
         if (!instructorId) {
@@ -50,7 +50,7 @@ export const listarPacientesHandler: RequestHandler = async (req, res) => {
     }
 };
 
-export const establecerPasswordPacienteHandler: RequestHandler = async (req, res) => {
+export const establecerPasswordPacienteHandler= async (req: Request, res: Response) => {
   try {
     const { correo, nuevaContraseña } = req.body;
     if (!correo || !nuevaContraseña) return res.status(400).json({ error: 'El correo y la nueva contraseña son obligatorios.' });
@@ -62,7 +62,7 @@ export const establecerPasswordPacienteHandler: RequestHandler = async (req, res
   }
 };
 
-export const asignarSerieHandler: RequestHandler = async (req, res) => {
+export const asignarSerieHandler= async (req: Request, res: Response) => {
   try {
     const { cedula } = req.params;
     const { serieId } = req.body;
@@ -74,7 +74,7 @@ export const asignarSerieHandler: RequestHandler = async (req, res) => {
   }
 };
 
-export const obtenerMiSerieHandler: RequestHandler = async (req, res) => {
+export const obtenerMiSerieHandler= async (req: Request, res: Response) => {
     const pacienteId = req.user?.id;
     if (!pacienteId) return res.status(401).json({ error: 'Token inválido' });
     try {
@@ -85,7 +85,7 @@ export const obtenerMiSerieHandler: RequestHandler = async (req, res) => {
     }
 };
 
-export const obtenerHistorialHandler: RequestHandler = async (req, res) => {
+export const obtenerHistorialHandler= async (req: Request, res: Response) => {
     const pacienteId = req.params.cedula;
     try {
         const historial = await obtenerHistorialDePaciente(pacienteId);
@@ -95,7 +95,7 @@ export const obtenerHistorialHandler: RequestHandler = async (req, res) => {
     }
 };
 
-export const obtenerMiHistorialHandler: RequestHandler = async (req, res) => {
+export const obtenerMiHistorialHandler= async (req: Request, res: Response) => {
     const pacienteId = req.user?.id;
     if (!pacienteId) return res.status(401).json({ error: 'Token inválido' });
     try {
@@ -106,7 +106,7 @@ export const obtenerMiHistorialHandler: RequestHandler = async (req, res) => {
     }
 };
 
-export const obtenerPacienteHandler: RequestHandler = async (req, res) => {
+export const obtenerPacienteHandler= async (req: Request, res: Response) => {
     try {
         const paciente = await obtenerPacientePorCedula(req.params.cedula);
         res.status(200).json(paciente);
@@ -115,7 +115,7 @@ export const obtenerPacienteHandler: RequestHandler = async (req, res) => {
     }
 };
 
-export const obtenerMiPerfilHandler: RequestHandler = async (req, res) => {
+export const obtenerMiPerfilHandler= async (req: Request, res: Response) => {
     const pacienteId = req.user?.id;
     if (!pacienteId) return res.status(401).json({ error: 'Token inválido' });
     try {
