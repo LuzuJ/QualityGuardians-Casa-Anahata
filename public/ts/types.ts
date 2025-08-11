@@ -42,11 +42,19 @@ export interface Postura {
   tipoTerapias: string[];
 }
 
+export type TipoTerapia = 
+  | 'ansiedad' 
+  | 'artritis' 
+  | 'dolor de espalda' 
+  | 'dolor de cabeza' 
+  | 'insomnio' 
+  | 'mala postura';
+
 // Interfaz para una Serie (usada en la creación y edición)
 export interface Serie {
   id: string;
   nombre: string;
-  tipoTerapia: string;
+  tipoTerapia: TipoTerapia;
   sesionesRecomendadas: number;
   posturas: {
       idPostura: string;

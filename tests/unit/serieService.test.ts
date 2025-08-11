@@ -7,9 +7,8 @@ import {
   obtenerSeriesPorInstructor,
 } from '../../src/services/serieService';
 import { v4 as uuidv4 } from 'uuid';
-import { Serie } from '../../src/models/serie';
+import { Serie, TipoTerapia } from '../../src/models/serie';
 
-// Este es el objeto que simula el constructor de consultas de Supabase
 const queryBuilderMock = {
   insert: jest.fn().mockReturnThis(),
   select: jest.fn().mockReturnThis(),
@@ -48,7 +47,7 @@ describe('Pruebas para serieService', () => {
 
       const datosNuevaSerie: Omit<Serie, 'id'> = {
         nombre: 'Serie de prueba',
-        tipoTerapia: 'ansiedad',
+        tipoTerapia: TipoTerapia.ANSIEDAD,
         posturas: [{ idPostura: 'postura-1', duracionMinutos: 10 }],
         sesionesRecomendadas: 5,
         instructorId: 'instructor-abc',
