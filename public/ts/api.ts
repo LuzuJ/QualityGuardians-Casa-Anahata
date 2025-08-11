@@ -27,13 +27,35 @@ export async function fetchApi<T>(endpoint: string, options: FetchOptions = {}):
     const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
 
     if (!response.ok) {
-      const errorData = await response.json();
-      // --- LÍNEA CORREGIDA ---
-      // Ahora busca la propiedad "error" que envía el backend.
-      throw new Error(errorData.error || errorData.message || 'Ocurrió un error en la petición.');
+
+      // Caso 1: Error de autenticación (Token inválido o expirado)
+      if (response.status === 401) {
+        // Limpiamos los datos de sesión del usuario
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('userRole');
+        
+        // Mostramos un mensaje claro y redirigimos
+        showToast('Tu sesión ha expirado. Por favor, inicia sesión de nuevo.', 'error');
+        setTimeout(() => window.location.href = 'inicioSesion.html', 2500);
+        
+        // Lanzamos un error para detener la ejecución del código que llamó a fetchApi
+        throw new Error('Sesión expirada');
+      }
+
+      // Intentamos leer el mensaje de error del backend
+      const errorData = await response.json().catch(() => ({})); // Previene un crash si la respuesta no es JSON
+      const serverMessage = errorData.error || errorData.message;
+
+      // Caso 2: Error del servidor (500 o superior)
+      if (response.status >= 500) {
+        throw new Error('Hubo un problema con el servidor. Por favor, intenta más tarde.');
+      }
+
+      // Caso 3: Otros errores (400, 404, etc.), usamos el mensaje del servidor si existe
+      throw new Error(serverMessage || 'Ocurrió un error en la petición.');
+      
     }
     
-    // Si la respuesta es vacía (ej. un 204 No Content), devuelve un objeto vacío.
     const text = await response.text();
     return text ? JSON.parse(text) : ({} as T);
 

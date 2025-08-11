@@ -1,5 +1,18 @@
 @import url('https://fonts.googleapis.com/css2?family=Qwitcher+Grypen:wght@400;700&display=swap');
 
+/* --- Mejoras de Foco Visual para Accesibilidad --- */
+.btn-primario:focus,
+.btn-secundario:focus,
+.btn-cerrar-sesion:focus,
+.btn-menu:focus,
+select:focus,
+textarea:focus {
+  outline: 2px solid #1ABC83;
+  outline-offset: 2px;
+  border-color: transparent; 
+}
+
+
 /* Estilos generales */
 body, html {
   margin: 0;

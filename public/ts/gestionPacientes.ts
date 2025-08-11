@@ -43,9 +43,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     let pacienteIdEditando: string | null = null;
 
     const cargarPacientes = async () => {
+        const patientListUl = document.querySelector<HTMLUListElement>('#lista-pacientes');
+        if (!patientListUl) return;
+        patientListUl.innerHTML = '<li id="loading-pacientes">Cargando pacientes...</li>';
+
         try {
             const pacientes = await fetchApi<Paciente[]>('/pacientes');
             patientListUl.innerHTML = '';
+
+            if (pacientes.length === 0) {
+                patientListUl.innerHTML = '<li>No tienes pacientes registrados todavía.</li>';
+                return;
+            }
+
             pacientes.forEach(paciente => {
                 const li = document.createElement('li');
                 li.textContent = `${paciente.nombre} (${paciente.correo}) `;
@@ -72,7 +82,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 patientListUl.appendChild(li);
             });
         } catch (error) {
-            if (error instanceof Error) showToast(`Error al cargar pacientes: ${error.message}`, 'error');
+            patientListUl.innerHTML = '<li>Error al cargar los pacientes. Por favor, intenta de nuevo.</li>';
+            if (error instanceof Error) showToast(`Error: ${error.message}`, 'error');
         }
     };
 

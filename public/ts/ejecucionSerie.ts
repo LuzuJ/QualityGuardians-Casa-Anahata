@@ -36,11 +36,29 @@ document.addEventListener('DOMContentLoaded', async () => {
     let pausasContador = 0;
     let tiempoEfectivoTotalSegundos = 0;
     let tiempoEfectivoInterval: number | null = null;
-    const horaInicioSesion = new Date(); // Guardamos la hora de inicio al cargar la página
+    let horaInicioSesion = new Date(); 
 
     // --- LÓGICA INICIAL ---
     const urlParams = new URLSearchParams(window.location.search);
     const dolorInicio = urlParams.get('dolorInicio');
+
+    if (urlParams.has('index')) {
+        posturaActualIndex = parseInt(urlParams.get('index') || '0', 10);
+        tiempoRestante = parseInt(urlParams.get('tiempo') || '0', 10);
+        isPaused = urlParams.get('pausado') === 'true';
+        pausasContador = parseInt(urlParams.get('pausasCount') || '0', 10);
+        tiempoEfectivoTotalSegundos = parseInt(urlParams.get('tiempoEfectivo') || '0', 10);
+        horaInicioSesion = new Date(urlParams.get('horaInicio') || new Date());
+
+        // Si no estaba pausado, reanudamos los contadores
+        if (!isPaused) {
+            startPauseBtn.textContent = 'Pausar';
+            // La llamada a `iniciarTimer` se hará después de cargar los datos de la serie
+        } else {
+            startPauseBtn.textContent = 'Continuar';
+        }
+    }
+
     if (!dolorInicio) {
         showToast('No se indicó el dolor inicial. Redirigiendo...', 'error');
         return setTimeout(() => window.location.href = 'ejecutarSesion.html', 2000);
@@ -101,7 +119,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         imagenEl.src = postura.fotoUrl || '';
         imagenEl.style.display = 'block';
         duracionOriginal = postura.duracionMinutos * 60;
-        detallesBtn.href = `visualizarPosturas.html?posturaId=${postura.id}&dolorInicio=${dolorInicio}&index=${posturaActualIndex}`;
+        detallesBtn.href = `visualizarPosturas.html?posturaId=${postura.id}&dolorInicio=${dolorInicio}&index=${posturaActualIndex}&tiempo=${tiempoRestante}&pausado=${isPaused}&pausasCount=${pausasContador}&tiempoEfectivo=${tiempoEfectivoTotalSegundos}&horaInicio=${horaInicioSesion.toISOString()}`;
         reiniciarTimer();
         anteriorBtn.disabled = posturaActualIndex === 0;
         siguienteBtn.textContent = (posturaActualIndex === serie.secuencia.length - 1) ? 'Finalizar Sesión' : 'Siguiente Postura';

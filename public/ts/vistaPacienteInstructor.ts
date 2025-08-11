@@ -60,6 +60,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
     } catch (error) {
+        nombrePacienteEl.textContent = 'Error al cargar';
+        infoPacienteEl.innerHTML = '<p>No se pudo cargar la información del paciente.</p>';
+        historialListUl.innerHTML = '<li>No se pudo cargar el historial.</li>';
         if (error instanceof Error) showToast(error.message, 'error');
     }
 });

@@ -52,6 +52,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             container.appendChild(ul);
         }
     } catch (e) { 
+        container.innerHTML = '<p>No se pudo cargar el historial. Por favor, intenta de nuevo.</p>';
         if (e instanceof Error) {
             showToast(e.message, 'error');
         }

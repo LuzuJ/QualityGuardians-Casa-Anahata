@@ -42,8 +42,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
 
     } catch (error) {
+        seriesListUl.innerHTML = '<li>Error al cargar las series. Intenta de nuevo.</li>';
         if (error instanceof Error) {
-            showToast(`Error al cargar las series: ${error.message}`, 'error');
+            showToast(`Error: ${error.message}`, 'error');
         }
     }
 });
