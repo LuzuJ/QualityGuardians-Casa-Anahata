@@ -1,5 +1,3 @@
-// public/ts/types.ts
-
 // Interfaz para una sesión individual en el historial
 export interface Sesion {
   id: string;

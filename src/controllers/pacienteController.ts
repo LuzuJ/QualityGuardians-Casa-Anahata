@@ -5,15 +5,23 @@ import {
     obtenerHistorialDePaciente, obtenerPacientePorCedula 
 } from '../services/pacienteService';
 
+/**
+ * Controlador para crear un nuevo paciente
+ * @description Registra un nuevo paciente asociándolo al instructor autenticado
+ * @param {Request} req - Objeto request de Express que contiene los datos del paciente en el body
+ * @param {Response} res - Objeto response de Express para enviar la respuesta
+ * @returns {Promise<void>} Respuesta JSON con el paciente creado o error
+ * @throws {401} Cuando el instructor no está autenticado
+ * @throws {400} Cuando hay errores en los datos del paciente
+ */
 export const crearPacienteHandler= async (req: Request, res: Response) => {
   try {
-    // 1. Obtenemos el ID del instructor desde el token (del usuario autenticado)
+    // Obtenemos el ID del instructor desde el token (del usuario autenticado)
     const instructorId = req.user?.id;
     if (!instructorId) {
         return res.status(401).json({ error: 'Instructor no autenticado o token inválido.' });
     }
 
-    // 2. Pasamos tanto los datos del formulario (req.body) como el instructorId al servicio
     const { instructorId: _omit, ...datosPaciente } = { ...req.body };
     const paciente = await registrarPaciente(datosPaciente, instructorId);
     res.status(201).json(paciente);
@@ -23,6 +31,15 @@ export const crearPacienteHandler= async (req: Request, res: Response) => {
   }
 };
  
+/**
+ * Controlador para actualizar los datos de un paciente
+ * @description Actualiza la información de un paciente existente identificado por su cédula
+ * @param {Request} req - Objeto request que contiene la cédula en params y los nuevos datos en body
+ * @param {Response} res - Objeto response para enviar la respuesta
+ * @returns {Promise<void>} Respuesta JSON con el paciente actualizado o error
+ * @throws {404} Cuando no se encuentra el paciente
+ * @throws {400} Cuando hay errores en los datos proporcionados
+ */
 export const actualizarPacienteHandler= async (req: Request, res: Response) => {
   try {
     const pacienteActualizado = await actualizarPaciente(req.params.cedula, req.body);
@@ -33,6 +50,15 @@ export const actualizarPacienteHandler= async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * Controlador para listar pacientes de un instructor
+ * @description Obtiene todos los pacientes asociados al instructor autenticado
+ * @param {Request} req - Objeto request que debe contener el token de autenticación del instructor
+ * @param {Response} res - Objeto response para enviar la respuesta
+ * @returns {Promise<void>} Respuesta JSON con la lista de pacientes o error
+ * @throws {401} Cuando el instructor no está autenticado
+ * @throws {500} Cuando hay errores al obtener la lista de pacientes
+ */
 export const listarPacientesHandler= async (req: Request, res: Response) => {
     try {
         const instructorId = req.user?.id;
@@ -41,15 +67,22 @@ export const listarPacientesHandler= async (req: Request, res: Response) => {
         }
         
         const pacientes = await obtenerPacientesPorInstructor(instructorId);
-        // Enviamos la respuesta como JSON. Si la consulta falla, el catch lo manejará.
         res.status(200).json(pacientes);
 
     } catch (error: any) {
-        // Este bloque atrapará el error del servicio y evitará el 'crash' del 500.
         res.status(500).json({ error: "No se pudo obtener la lista de pacientes: " + error.message });
     }
 };
 
+/**
+ * Controlador para establecer/cambiar la contraseña de un paciente
+ * @description Permite establecer o cambiar la contraseña de un paciente mediante su correo electrónico
+ * @param {Request} req - Objeto request que contiene correo y nuevaContraseña en el body
+ * @param {Response} res - Objeto response para enviar la respuesta
+ * @returns {Promise<void>} Respuesta JSON confirmando el cambio de contraseña o error
+ * @throws {400} Cuando faltan datos requeridos (correo o contraseña)
+ * @throws {404} Cuando no se encuentra el paciente con el correo especificado
+ */
 export const establecerPasswordPacienteHandler= async (req: Request, res: Response) => {
   try {
     const { correo, nuevaContraseña } = req.body;
@@ -62,6 +95,15 @@ export const establecerPasswordPacienteHandler= async (req: Request, res: Respon
   }
 };
 
+/**
+ * Controlador para asignar una serie de ejercicios a un paciente
+ * @description Asigna una serie específica de ejercicios a un paciente identificado por su cédula
+ * @param {Request} req - Objeto request que contiene la cédula del paciente en params y serieId en body
+ * @param {Response} res - Objeto response para enviar la respuesta
+ * @returns {Promise<void>} Respuesta JSON confirmando la asignación o error
+ * @throws {400} Cuando no se proporciona el ID de la serie
+ * @throws {404} Cuando no se encuentra el paciente o la serie
+ */
 export const asignarSerieHandler= async (req: Request, res: Response) => {
   try {
     const { cedula } = req.params;
@@ -74,6 +116,15 @@ export const asignarSerieHandler= async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * Controlador para obtener la serie asignada al paciente autenticado
+ * @description Permite al paciente autenticado obtener información de la serie que tiene asignada
+ * @param {Request} req - Objeto request que debe contener el token de autenticación del paciente
+ * @param {Response} res - Objeto response para enviar la respuesta
+ * @returns {Promise<void>} Respuesta JSON con la serie asignada o error
+ * @throws {401} Cuando el paciente no está autenticado
+ * @throws {404} Cuando no se encuentra la serie asignada
+ */
 export const obtenerMiSerieHandler= async (req: Request, res: Response) => {
     const pacienteId = req.user?.id;
     if (!pacienteId) return res.status(401).json({ error: 'Token inválido' });
@@ -85,6 +136,14 @@ export const obtenerMiSerieHandler= async (req: Request, res: Response) => {
     }
 };
 
+/**
+ * Controlador para obtener el historial de sesiones de un paciente específico
+ * @description Permite a un instructor obtener el historial completo de sesiones de un paciente por su cédula
+ * @param {Request} req - Objeto request que contiene la cédula del paciente en params
+ * @param {Response} res - Objeto response para enviar la respuesta
+ * @returns {Promise<void>} Respuesta JSON con el historial de sesiones o error
+ * @throws {404} Cuando no se encuentra el paciente o su historial
+ */
 export const obtenerHistorialHandler= async (req: Request, res: Response) => {
     const pacienteId = req.params.cedula;
     try {
@@ -95,6 +154,15 @@ export const obtenerHistorialHandler= async (req: Request, res: Response) => {
     }
 };
 
+/**
+ * Controlador para obtener el historial del paciente autenticado
+ * @description Permite al paciente autenticado obtener su propio historial de sesiones
+ * @param {Request} req - Objeto request que debe contener el token de autenticación del paciente
+ * @param {Response} res - Objeto response para enviar la respuesta
+ * @returns {Promise<void>} Respuesta JSON con el historial de sesiones del paciente o error
+ * @throws {401} Cuando el paciente no está autenticado
+ * @throws {404} Cuando no se encuentra el historial del paciente
+ */
 export const obtenerMiHistorialHandler= async (req: Request, res: Response) => {
     const pacienteId = req.user?.id;
     if (!pacienteId) return res.status(401).json({ error: 'Token inválido' });
@@ -106,6 +174,14 @@ export const obtenerMiHistorialHandler= async (req: Request, res: Response) => {
     }
 };
 
+/**
+ * Controlador para obtener información de un paciente específico
+ * @description Obtiene la información completa de un paciente mediante su cédula
+ * @param {Request} req - Objeto request que contiene la cédula del paciente en params
+ * @param {Response} res - Objeto response para enviar la respuesta
+ * @returns {Promise<void>} Respuesta JSON con la información del paciente o error
+ * @throws {404} Cuando no se encuentra el paciente con la cédula especificada
+ */
 export const obtenerPacienteHandler= async (req: Request, res: Response) => {
     try {
         const paciente = await obtenerPacientePorCedula(req.params.cedula);
@@ -115,6 +191,15 @@ export const obtenerPacienteHandler= async (req: Request, res: Response) => {
     }
 };
 
+/**
+ * Controlador para obtener el perfil del paciente autenticado
+ * @description Permite al paciente autenticado obtener su propia información de perfil
+ * @param {Request} req - Objeto request que debe contener el token de autenticación del paciente
+ * @param {Response} res - Objeto response para enviar la respuesta
+ * @returns {Promise<void>} Respuesta JSON con la información del perfil del paciente o error
+ * @throws {401} Cuando el paciente no está autenticado
+ * @throws {404} Cuando no se encuentra el perfil del paciente
+ */
 export const obtenerMiPerfilHandler= async (req: Request, res: Response) => {
     const pacienteId = req.user?.id;
     if (!pacienteId) return res.status(401).json({ error: 'Token inválido' });

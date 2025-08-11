@@ -3,6 +3,15 @@ import { Instructor } from '../models/instructor';
 import { validarContraseña } from '../utils/validacion';
 import bcrypt from 'bcrypt';
 
+/**
+ * Registra un nuevo instructor en el sistema
+ * 
+ * @param nombre - Nombre completo del instructor
+ * @param correo - Email del instructor (debe ser único)
+ * @param contraseña - Contraseña en texto plano del instructor
+ * @returns Promise que resuelve con los datos del instructor registrado (sin contraseña)
+ * @throws Error si la contraseña no es válida, el correo ya está registrado, o hay error en la base de datos
+ */
 export async function registrarInstructor(
   nombre: string,
   correo: string,

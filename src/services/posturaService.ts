@@ -1,6 +1,13 @@
 import { supabase } from '../config/supabaseClient';
 import { Postura } from '../models/postura';
 
+/**
+ * Transforma un valor de base de datos en un array de strings
+ * Maneja tanto arrays existentes como strings separados por punto y coma
+ * 
+ * @param valor - Valor a transformar (array o string)
+ * @returns Array de strings
+ */
 const transformarCampoAArray = (valor: any): string[] => {
   if (Array.isArray(valor)) {
     return valor;
@@ -11,6 +18,13 @@ const transformarCampoAArray = (valor: any): string[] => {
   return [];
 };
 
+/**
+ * Transforma los datos de postura de la base de datos al modelo de la aplicación
+ * Convierte campos de texto separados por punto y coma en arrays
+ * 
+ * @param dbPostura - Datos de postura desde la base de datos
+ * @returns Objeto Postura transformado con campos como arrays
+ */
 const transformarPostura = (dbPostura: any): Postura => {
   const descripcion = transformarCampoAArray(dbPostura.descripcion);
   const beneficios = transformarCampoAArray(dbPostura.beneficios);
@@ -30,7 +44,13 @@ const transformarPostura = (dbPostura: any): Postura => {
   };
 };
 
-
+/**
+ * Obtiene todas las posturas disponibles, opcionalmente filtradas por tipo de terapia
+ * 
+ * @param tipoTerapia - Tipo de terapia opcional para filtrar posturas
+ * @returns Promise que resuelve con un array de posturas
+ * @throws Error si hay problemas al obtener las posturas de la base de datos
+ */
 export async function obtenerTodasLasPosturas(tipoTerapia?: string): Promise<Postura[]> {
   let query = supabase.from('Postura').select('*');
 
@@ -50,7 +70,13 @@ export async function obtenerTodasLasPosturas(tipoTerapia?: string): Promise<Pos
   return data.map(transformarPostura);
 }
 
-
+/**
+ * Obtiene una postura específica por su ID
+ * 
+ * @param id - ID único de la postura
+ * @returns Promise que resuelve con la postura encontrada o undefined si no existe
+ * @throws Error si hay problemas en la consulta (excepto cuando no se encuentra)
+ */
 export async function obtenerPosturaPorId(id: string): Promise<Postura | undefined> {
   const { data, error } = await supabase
     .from('Postura')

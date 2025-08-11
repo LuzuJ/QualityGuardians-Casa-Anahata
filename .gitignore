@@ -1,6 +1,5 @@
 .history
 node_modules
-.env
 coverage
 .scannerwork
 .vscode

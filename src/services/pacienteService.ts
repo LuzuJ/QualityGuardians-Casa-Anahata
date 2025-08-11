@@ -6,7 +6,14 @@ import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 import { Sesion } from '../models/sesion';
 
-
+/**
+ * Registra un nuevo paciente en el sistema
+ * 
+ * @param datosPaciente - Datos del paciente (excluyendo cedula, contraseña, estado y serieAsignada)
+ * @param instructorId - ID del instructor que registra al paciente
+ * @returns Promise que resuelve con los datos del paciente registrado
+ * @throws Error si el correo o cédula ya están registrados, o hay error en la base de datos
+ */
 export async function registrarPaciente(datosPaciente: Omit<Paciente, 'cedula' | 'contraseña' | 'estado' | 'serieAsignada'>, instructorId: string) {
     const { data: existentePorCorreo } = await supabase
         .from('Paciente')
@@ -36,12 +43,27 @@ export async function registrarPaciente(datosPaciente: Omit<Paciente, 'cedula' |
     return data;
 }
 
+/**
+ * Actualiza los datos de un paciente existente
+ * 
+ * @param cedula - Cédula del paciente a actualizar
+ * @param datos - Datos parciales a actualizar (excluyendo cedula e instructorId)
+ * @returns Promise que resuelve con los datos actualizados del paciente
+ * @throws Error si hay error al actualizar o el paciente no existe
+ */
 export async function actualizarPaciente(cedula: string, datos: Partial<Omit<Paciente, 'cedula' | 'instructorId'>>) {
     const { data, error } = await supabase.from('Paciente').update(datos).eq('cedula', cedula).select().single();
     if (error) throw new Error('Error al actualizar o paciente no encontrado.');
     return data;
 }
 
+/**
+ * Obtiene la lista de pacientes asignados a un instructor específico
+ * 
+ * @param instructorId - ID del instructor
+ * @returns Promise que resuelve con un array de pacientes (datos parciales)
+ * @throws Error si hay error en la base de datos al obtener los pacientes
+ */
 export async function obtenerPacientesPorInstructor(instructorId: string): Promise<Partial<Paciente>[]> {
     const { data, error } = await supabase
         .from('Paciente')
@@ -55,6 +77,14 @@ export async function obtenerPacientesPorInstructor(instructorId: string): Promi
     return data || [];
 }
 
+/**
+ * Establece la contraseña de un paciente y activa su cuenta
+ * 
+ * @param correo - Email del paciente
+ * @param nuevaContraseña - Contraseña en texto plano a establecer
+ * @returns Promise que resuelve con mensaje de confirmación
+ * @throws Error si el paciente no existe, la cuenta ya está activada, la contraseña no es válida, o hay error al actualizar
+ */
 export async function establecerPasswordPaciente(correo: string, nuevaContraseña: string) {
     validarContraseña(nuevaContraseña);
     const { data: paciente, error: findError } = await supabase.from('Paciente').select('*').eq('correo', correo).single();
@@ -69,6 +99,14 @@ export async function establecerPasswordPaciente(correo: string, nuevaContraseñ
     return { message: "Cuenta activada y contraseña establecida con éxito." };
 }
 
+/**
+ * Asigna una serie terapéutica a un paciente específico
+ * 
+ * @param pacienteCedula - Cédula del paciente
+ * @param serieId - ID de la serie a asignar
+ * @returns Promise que resuelve con los datos actualizados del paciente
+ * @throws Error si la serie no existe o hay error al asignar
+ */
 export async function asignarSerieAPaciente(pacienteCedula: string, serieId: string) {
     const { data: serieAAsignar } = await supabase.from('Series').select('*').eq('id', serieId).single();
     if (!serieAAsignar) throw new Error('Serie no encontrada');
@@ -84,6 +122,13 @@ export async function asignarSerieAPaciente(pacienteCedula: string, serieId: str
     return data;
 }
 
+/**
+ * Obtiene la serie terapéutica asignada a un paciente con detalles de las posturas
+ * 
+ * @param pacienteCedula - Cédula del paciente
+ * @returns Promise que resuelve con los datos completos de la serie asignada
+ * @throws Error si el paciente no tiene serie asignada o la serie no existe
+ */
 export async function obtenerSerieAsignada(pacienteCedula: string) { 
     const { data: paciente, error: errorPaciente } = await supabase.from('Paciente').select('serieAsignada').eq('cedula', pacienteCedula).single();
     if (errorPaciente || !paciente?.serieAsignada ) {
@@ -105,6 +150,14 @@ export async function obtenerSerieAsignada(pacienteCedula: string) {
     return serieParaFrontend;
 }
 
+/**
+ * Registra una sesión completada por un paciente y actualiza el contador de sesiones
+ * 
+ * @param pacienteId - Cédula del paciente
+ * @param datosSesion - Datos de la sesión (excluyendo id, pacienteId, seriesId y fecha)
+ * @returns Promise que resuelve con mensaje de confirmación
+ * @throws Error si el paciente no existe, no tiene serie asignada, o hay error al guardar
+ */
 export async function registrarSesionCompletada(pacienteId: string, datosSesion: Omit<Sesion, 'id' | 'pacienteId' | 'seriesId' | 'fecha'>) {
     const { data: paciente, error: findError } = await supabase.from('Paciente').select('cedula, serieAsignada').eq('cedula', pacienteId).single();
     if (findError || !paciente) throw new Error('Paciente no encontrado');
@@ -136,6 +189,13 @@ export async function registrarSesionCompletada(pacienteId: string, datosSesion:
     return { message: 'Sesión registrada con éxito' };
 }
 
+/**
+ * Obtiene el historial completo de sesiones de un paciente
+ * 
+ * @param pacienteCedula - Cédula del paciente
+ * @returns Promise que resuelve con un array de sesiones ordenadas por fecha descendente
+ * @throws Error si hay error al obtener el historial de la base de datos
+ */
 export async function obtenerHistorialDePaciente(pacienteCedula: string): Promise<Sesion[]> { 
     const { data, error } = await supabase.from('Sesiones').select('*').eq('pacienteId', pacienteCedula).order('fecha', { ascending: false });
     if (error) {
@@ -145,6 +205,13 @@ export async function obtenerHistorialDePaciente(pacienteCedula: string): Promis
     return data || [];
 }
 
+/**
+ * Obtiene los datos completos de un paciente por su cédula
+ * 
+ * @param cedula - Cédula del paciente
+ * @returns Promise que resuelve con los datos completos del paciente
+ * @throws Error si el paciente no existe o hay error en la base de datos
+ */
 export async function obtenerPacientePorCedula(cedula: string): Promise<Paciente> {
     const { data, error } = await supabase
         .from('Paciente')

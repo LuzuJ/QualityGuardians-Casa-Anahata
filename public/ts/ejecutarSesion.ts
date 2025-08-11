@@ -1,9 +1,16 @@
-// public/ts/ejecutarSesion.ts
-
-import { fetchApi, showToast } from './api';
+import { fetchApi} from './api';
 import type { Paciente } from './types';
-import { verificarAutenticacion, cerrarSesion } from './utils';
+import { verificarAutenticacion, cerrarSesion, showToast } from './utils';
 
+/**
+ * Script para la página de inicio de sesión de ejercicios
+ * @description Maneja la interfaz previa a la ejecución donde los pacientes ven su progreso y establecen el nivel de dolor inicial
+ */
+
+/**
+ * Inicializa la página de ejecutar sesión
+ * @description Configura la autenticación, carga el progreso del paciente y maneja el formulario de inicio de sesión
+ */
 document.addEventListener('DOMContentLoaded', async () => {
     verificarAutenticacion(); 
     
@@ -15,11 +22,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (!progresoEl) return;
 
-    // --- NUEVA LÓGICA PARA CARGAR EL PROGRESO ---
+    // Cargar y mostrar el progreso actual del paciente
     try {
-        // Pedimos al backend los datos del paciente que ha iniciado sesión
-        const paciente = await fetchApi<Paciente>('/pacientes/mi-perfil'); // <-- Necesitamos crear este endpoint
+        // Obtener datos completos del perfil del paciente autenticado
+        const paciente = await fetchApi<Paciente>('/pacientes/mi-perfil');
 
+        // Verificar si el paciente tiene una serie asignada y mostrar progreso
         if (paciente && paciente.serieAsignada) {
             progresoEl.innerHTML = `
                 <p><strong>Serie Asignada:</strong> ${paciente.serieAsignada.nombreSerie}</p>
@@ -31,14 +39,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch (error) {
         if (error instanceof Error) showToast(error.message, 'error');
     }
-    // --- FIN DE LA NUEVA LÓGICA ---
 
+    /**
+     * Manejador del formulario de inicio de sesión de ejercicios
+     * @description Procesa la selección del nivel de dolor inicial y redirige a la ejecución de la serie
+     * @param {Event} e - Evento de submit del formulario
+     */
     form?.addEventListener('submit', (e) => {
         e.preventDefault();
+        
+        // Obtener el nivel de dolor/molestia seleccionado por el paciente
         const dolorInicio = (document.querySelector<HTMLSelectElement>('#dolorInicio'))?.value;
+        
+        // Validar que se haya seleccionado un nivel de dolor
         if (!dolorInicio) {
             return showToast('Selecciona tu nivel de molestia.', 'error');
         }
+        
+        // Redirigir a la página de ejecución con el nivel de dolor como parámetro
         window.location.href = `ejecucionSerie.html?dolorInicio=${dolorInicio}`;
     });
 });
