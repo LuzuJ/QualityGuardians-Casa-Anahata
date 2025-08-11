@@ -10,6 +10,13 @@ import sesionRoutes from './routes/sesionRoutes';
 import statsRoutes from './routes/statsRoutes';
 
 const app = express();
+app.use((req, res, next) => {
+    res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' https://fonts.googleapis.com; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; frame-src 'self' https://www.youtube.com;");
+    res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+    res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+    next();
+});
+
 app.disable('x-powered-by');
 
 const corsOptions = {
