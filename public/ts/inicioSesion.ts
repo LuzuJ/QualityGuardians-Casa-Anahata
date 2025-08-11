@@ -1,35 +1,35 @@
 import { fetchApi } from './api';
-import { showToast } from './utils';
+import { showToast, setupPasswordToggle } from './utils';
 
-function setupPasswordToggle(container: HTMLElement) {
-    const input = container.querySelector<HTMLInputElement>('input[type="password"], input[type="text"]');
-    const toggle = container.querySelector<HTMLElement>('.toggle-password');
+/**
+ * Script para la página de inicio de sesión
+ * @description Maneja la autenticación de usuarios (pacientes e instructores) con validación de credenciales
+ */
 
-    if (!input || !toggle) return;
-
-    toggle.addEventListener('click', () => {
-        if (input.type === 'password') {
-            input.type = 'text';
-            toggle.textContent = '🙈';
-        } else {
-            input.type = 'password';
-            toggle.textContent = '👁️';
-        }
-    });
-}
-
+/**
+ * Inicialización del script de inicio de sesión
+ * @description Event listener principal que configura la funcionalidad de autenticación
+ * @param {Event} event - Evento DOMContentLoaded
+ */
 document.addEventListener('DOMContentLoaded', () => {
 
+    // Configurar funcionalidad de mostrar/ocultar contraseña
     const passwordContainer = document.querySelector('.campo-password-contenedor');
     if (passwordContainer) {
         setupPasswordToggle(passwordContainer as HTMLElement);
     }
 
-    
     const form = document.querySelector<HTMLFormElement>('.formulario');
     const btnPaciente = form?.querySelector<HTMLButtonElement>('button[formaction="ejecutarSesion.html"]');
     const btnInstructor = form?.querySelector<HTMLButtonElement>('button[formaction="dashboard.html"]');
 
+    /**
+     * Maneja el proceso de autenticación de usuarios
+     * @description Valida credenciales y redirige según el rol del usuario
+     * @param {('paciente' | 'instructor')} rol - Tipo de usuario que intenta iniciar sesión
+     * @returns {Promise<void>} Promesa que se resuelve cuando se completa el login
+     * @throws {Error} Error si fallan las credenciales o hay problemas de conexión
+     */
     const handleLogin = async (rol: 'paciente' | 'instructor') => {
         const correo = (form?.querySelector('input[name="correo"]') as HTMLInputElement)?.value;
         const password = (form?.querySelector('input[name="password"]') as HTMLInputElement)?.value;
@@ -40,6 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
+            // Preparar datos para el proceso de autenticación
             const loginPayload = {
                 correo,
                 contraseña: password,
@@ -51,9 +52,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify(loginPayload) 
             });
 
+            // Almacenar token de autenticación y rol en localStorage
             localStorage.setItem('authToken', data.token);
             localStorage.setItem('userRole', data.rol);
 
+            // Redirigir según el rol del usuario autenticado
             if (data.rol === 'paciente') window.location.href = 'ejecutarSesion.html';
             else if (data.rol === 'instructor') window.location.href = 'dashboard.html';
             else throw new Error('Rol desconocido recibido del servidor.');
@@ -63,6 +66,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    btnPaciente?.addEventListener('click', (e) => { e.preventDefault(); handleLogin('paciente'); });
-    btnInstructor?.addEventListener('click', (e) => { e.preventDefault(); handleLogin('instructor'); });
+    // Configurar event listeners para los botones de inicio de sesión
+    // Botón para pacientes - redirige a página de ejecución de sesiones
+    btnPaciente?.addEventListener('click', (e) => { 
+        e.preventDefault(); 
+        handleLogin('paciente'); 
+    });
+    
+    // Botón para instructores - redirige a dashboard administrativo
+    btnInstructor?.addEventListener('click', (e) => { 
+        e.preventDefault(); 
+        handleLogin('instructor'); 
+    });
 });

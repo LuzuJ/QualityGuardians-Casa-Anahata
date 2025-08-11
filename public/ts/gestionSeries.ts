@@ -1,7 +1,17 @@
-import { fetchApi, showToast } from './api';
+import { fetchApi } from './api';
 import type { Serie } from './types';
-import { verificarAutenticacion, cerrarSesion } from './utils';
+import { verificarAutenticacion, cerrarSesion, showToast } from './utils';
 
+/**
+ * Script para la página de gestión de series de ejercicios
+ * @description Maneja la interfaz donde los instructores pueden visualizar y administrar sus series creadas
+ */
+
+/**
+ * Inicialización del script de gestión de series
+ * @description Event listener principal que configura la funcionalidad de visualización y gestión de series
+ * @param {Event} event - Evento DOMContentLoaded
+ */
 document.addEventListener('DOMContentLoaded', async () => {
     verificarAutenticacion(); 
     
@@ -13,22 +23,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!seriesListUl) return;
 
     try {
-        // 1. Obtener todas las series del backend
+        // Obtener todas las series del instructor desde la API
         const series = await fetchApi<Serie[]>('/series');
-        seriesListUl.innerHTML = ''; // Limpiar la lista por si acaso
+        
+        seriesListUl.innerHTML = '';
 
         if (series.length === 0) {
             seriesListUl.innerHTML = '<p>Aún no has creado ninguna serie.</p>';
             return;
         }
 
-        // 2. Recorrer cada serie y crear un elemento en la lista
         series.forEach(serie => {
+            // Crear elemento de lista para la serie
             const li = document.createElement('li');
             li.textContent = `${serie.nombre} - (${serie.tipoTerapia}) `;
             li.style.marginBottom = '10px';
 
-            // 3. Crear el botón de "Editar" para cada serie
+            // Crear botón de edición para la serie
             const editButton = document.createElement('button');
             editButton.textContent = 'Editar';
             editButton.className = 'btn-primario';
@@ -37,13 +48,15 @@ document.addEventListener('DOMContentLoaded', async () => {
                 window.location.href = `editarSerie.html?id=${serie.id}`;
             };
             
+            // Agregar botón al elemento de lista y lista al contenedor
             li.appendChild(editButton);
             seriesListUl.appendChild(li);
         });
 
     } catch (error) {
+        seriesListUl.innerHTML = '<li>Error al cargar las series. Intenta de nuevo.</li>';
         if (error instanceof Error) {
-            showToast(`Error al cargar las series: ${error.message}`, 'error');
+            showToast(`Error: ${error.message}`, 'error');
         }
     }
 });
