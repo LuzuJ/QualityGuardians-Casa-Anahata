@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://qualityguardians-casa-anahata.netlify.app/sitemap.xml

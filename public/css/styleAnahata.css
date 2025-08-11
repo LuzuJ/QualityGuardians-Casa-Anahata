@@ -129,6 +129,7 @@ body, html {
   transition: all 0.2s;
 }
 
+
 .btn-menu:hover {
   background-color: #e0f2f1;
 }
@@ -156,6 +157,31 @@ body, html {
 .formulario {
   display: flex;
   flex-direction: column;
+}
+
+.formulario label {
+  margin-top: 1rem; 
+  color: #f0f0f0;  
+  font-weight: bold;
+}
+
+.formulario .password-rules {
+  margin: 0.5rem 0 1rem 5px; 
+}
+
+.formulario .btn-primario {
+    margin-top: 1.5rem; 
+}
+
+.titulo-lista {
+  margin-top: 2rem; 
+}
+
+.descripcion-formulario {
+  color: white;
+  font-size: 1rem; 
+  margin-bottom: 1rem;
+  line-height: 1.5; 
 }
 
 .formulario h2 {
@@ -190,6 +216,12 @@ body, html {
   flex: 1;
 }
 
+.grupo-botones-rol{
+  display: flex;
+  gap: 1rem;
+  
+}
+
 .grupo-radio {
   display: flex;
   gap: 1rem;
@@ -209,8 +241,8 @@ body, html {
 
 /* Botones */
 .btn-primario {
-  background-color: #1ABC83;
-  color: white;
+  background-color: #159a70;
+  color: black;
   border: none;
   padding: 0.8rem 1.5rem;
   border-radius: 6px;
@@ -221,7 +253,7 @@ body, html {
 }
 
 .btn-primario:hover {
-  background-color: #1ABC83;
+  background-color: #117e5a;
 }
 
 /* Enlaces */
@@ -233,13 +265,13 @@ body, html {
 }
 
 .formulario a {
-  color: #00a896;
-  text-decoration: none;
+  color: #99e6d1;
+  text-decoration: underline;
   transition: color 0.3s;
 }
 
 .formulario a:hover {
-  color: #00887b;
+  color: #b3fff0;
   text-decoration: underline;
 }
 
@@ -427,6 +459,7 @@ body, html {
   width: 100%; 
 }
 
+
 /* El campo de contraseña ahora ocupa casi todo el espacio, dejando sitio para el ícono */
 .campo-password-contenedor input {
   width: 100%;
@@ -445,7 +478,7 @@ body, html {
 /* Estilo para el texto de las reglas de la contraseña */
 .password-rules {
   font-size: 0.8rem;
-  color: #bdc3c7; /* Un color suave que no distraiga */
+  color: #888; /* Un color suave que no distraiga */
   padding-left: 5px;
   list-style-type: none; /* Quitamos los puntos de la lista */
   margin: -10px 0 0 0; /* Ajustamos el espaciado */
