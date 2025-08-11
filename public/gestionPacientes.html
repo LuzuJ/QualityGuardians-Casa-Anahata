@@ -4,12 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Gestión de Pacientes</title>
+  <meta name="description" content="Gestiona a tus pacientes en Casa Anahata. Añade nuevos pacientes, edita su información y accede a su historial de progreso terapéutico.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Qwitcher+Grypen:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/styleAnahata.css" />
 </head>
 <body class="dashboard">
   <script type="module" src="/ts/gestionPacientes.ts"></script>
   <div class="barra">
-    <img src="/assets/img/logo.png" alt="Logo" class="logo" />
+    <img src="/assets/img/logo.png" alt="Logo de Casa Anahata" class="logo" />
     <div class="marca">Casa Anahata</div>
     <button class="btn-cerrar-sesion">Cerrar sesión</button>
   </div>
@@ -62,7 +66,7 @@
         </form>
 
         <br />
-        <h3>Pacientes registrados</h3>
+        <h3 class="titulo-lista">Pacientes registrados</h3>
         <ul>
           <li>Ana Pérez <button class="btn-primario">Editar</button></li>
           <li>Luis López <button class="btn-primario">Editar</button></li>
