@@ -3,11 +3,11 @@
     "target": "ES2020", // O una versión moderna de JS que soporte Node.js
     "module": "commonjs", // El sistema de módulos estándar de Node.js
     "outDir": "./dist", // Directorio de salida para los archivos .js
-    "rootDir": ".", // Directorio raíz de tus archivos .ts (ahora incluye src y tests)
+    "rootDir": "src", // Directorio raíz de tus archivos .ts (ahora incluye src y tests)
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "types": ["node", "jest"]
   },
-  "include": ["src/**/*", "tests/**/*"] // Asegúrate de que solo compile lo que está en 'src'
+  "include": ["src/**/*"] // Asegúrate de que solo compile lo que está en 'src'
 }
